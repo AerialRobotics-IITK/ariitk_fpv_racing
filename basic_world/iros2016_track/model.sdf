@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='iROS2016 Track'>
+    <link name="gate_05">
+      <pose>13 -6 0  0 0 5</pose>
+      <visual name="visual">
+	      <geometry>
+          <mesh><uri>model://iros2016_track/gates/05.dae</uri></mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0.1 0.1 0.2 1</diffuse>
+          <specular>0 0 0 0</specular>
+          <emissive>0 0 0 1</emissive>
+        </material>
+      </visual>
+    </link>
+    <static>1</static>
+    <allow_auto_disable>1</allow_auto_disable>
+  </model>
+</sdf>
