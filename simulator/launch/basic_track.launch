@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding ="UTF-8"?>
 <launch>
 
-    <arg name="world" default="$(find simulator)/worlds/blue_frames.world"/>
+    <arg name="world" default="$(find simulator)/worlds/basic_racing_arena.world"/>
     
     <!-- gazebo configs -->
     <arg name="gui" default="true"/>
