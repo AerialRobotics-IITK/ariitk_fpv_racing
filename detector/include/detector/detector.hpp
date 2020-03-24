@@ -26,5 +26,5 @@ namespace ariitk::detector {
             int canny_param_low_;
             int canny_param_upper_;
             int canny_kernel_size_;
-    }
+    };
 }
