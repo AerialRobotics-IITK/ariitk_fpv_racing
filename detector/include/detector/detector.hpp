@@ -8,7 +8,7 @@ namespace ariitk::detector {
     class Detector {
         public : 
             Detector();
-            ~Detector() {};
+            ~Detector();
             std::pair<int, int> getCentre() { return centre_;};
             void setHSVMin(const int& , const int& , const int&);
             void setHSVMax(const int& , const int& , const int&);

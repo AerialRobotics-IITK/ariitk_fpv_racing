@@ -10,5 +10,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_definitions(-std=c++17)
 set(CMAKE_BUILD_TYPE Release)
 
+cs_add_library(detector_lib src/detector.cpp)
+target_link_libraries(detector_lib ${OpenCV_LIBS})
+
 cs_install()
 cs_export()

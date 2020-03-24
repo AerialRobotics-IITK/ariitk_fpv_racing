@@ -7,7 +7,7 @@
 namespace ariitk::detector_ros{
     class DetectorROS {
         public:
-            DetectorROS();
+            DetectorROS() {};
             ~DetectorROS() {};
             void init(ros::NodeHandle& nh);
             void run();
