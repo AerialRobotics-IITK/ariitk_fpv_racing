@@ -25,10 +25,10 @@ namespace ariitk::detector {
     void Detector::thresholdImage(cv::Mat& img) {
         cv::GaussianBlur( img, img, cv::Size(3,3), 0, 0 );
         cv::cvtColor( img, img, CV_BGR2HSV);
-        cv::inRange( img, hsv_min_, hsv_max_);
+        cv::inRange( img, hsv_min_, hsv_max_, thresh_img_);
         /*cv::dilate( img, img, cv::Mat(), cv::Point(-1,-1), 2, 1, 1);
         cv::erode( img ,img, cv::Mat(), cv::Point(-1,-1), 2, 1, 1);*/
-        thresh_img_ = img;
+        // thresh_img_ = img;
     }
 
     void Detector::findGoodContours() {
