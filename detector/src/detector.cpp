@@ -22,7 +22,7 @@ namespace ariitk::detector {
         hsv_min_ = cv::Scalar(h,s,v);
     }
 
-    void thresholdImage(cv::Mat& img) {
+    void Detector::thresholdImage(cv::Mat& img) {
         cv::GaussianBlur( img, img, cv::Size(3,3), 0, 0 );
         cv::cvtColor( img, img, CV_BGR2HSV);
         cv::inRange( img, hsv_min_, hsv_max_);
@@ -31,7 +31,7 @@ namespace ariitk::detector {
         thresh_img_ = img;
     }
 
-    void findGoodContours() {
+    void Detector::findGoodContours() {
         cv::Canny(thresh_img_ , thresh_img_, canny_param_low_, canny_param_upper_ , canny_kernel_size_);
         std::vector<std::vector<cv::Point>> contours;
         std::vector<cv::Vec4i> hierarchy;
@@ -45,7 +45,7 @@ namespace ariitk::detector {
         }
     }
 
-    void drawContours(cv::Mat& test) {
+    void Detector::drawContours(cv::Mat& test) {
         int id;
         int size = good_contours_.size();
         for(id=0; id<size ; id+=1){
@@ -56,7 +56,7 @@ namespace ariitk::detector {
         cv::destroyWindow("Test Contour Image");
     }
 
-    void findFrameCentre() {
+    void Detector::findFrameCentre() {
         int i, size, x, y;
         float l;
         long int area=-1;
