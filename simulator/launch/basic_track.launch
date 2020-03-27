@@ -18,4 +18,5 @@
         <arg name="paused" value="$(arg paused)"/>
         <arg name="respawn_gazebo" value="$(arg respawn_gazebo)"/>
     </include>
+    <node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen"/>
 </launch>

@@ -15,7 +15,8 @@ namespace ariitk::detector {
             void thresholdImage(cv::Mat& );
             void findGoodContours();
             void drawContours(cv::Mat&);
-            void findFrameCentre();
+            void findFrameCentre(cv::Mat&);
+            cv::Mat returnThresh(){return thresh_img_;};
 
         private :
             std::pair<int, int> centre_;

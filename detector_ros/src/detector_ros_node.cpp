@@ -10,7 +10,7 @@ int main(int argc,char** argv) {
 
     detect.init(nh);
 
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(20);
 
     while(ros::ok()) {
         detect.run();

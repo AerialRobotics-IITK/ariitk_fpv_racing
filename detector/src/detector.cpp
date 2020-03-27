@@ -1,4 +1,5 @@
 #include <detector/detector.hpp>
+#include <iostream>
 
 namespace ariitk::detector {
 
@@ -23,15 +24,18 @@ namespace ariitk::detector {
     }
 
     void Detector::thresholdImage(cv::Mat& img) {
+        if (img.empty()){return;};
+        
         cv::GaussianBlur( img, img, cv::Size(3,3), 0, 0 );
         cv::cvtColor( img, img, CV_BGR2HSV);
         cv::inRange( img, hsv_min_, hsv_max_, thresh_img_);
         /*cv::dilate( img, img, cv::Mat(), cv::Point(-1,-1), 2, 1, 1);
         cv::erode( img ,img, cv::Mat(), cv::Point(-1,-1), 2, 1, 1);*/
-        // thresh_img_ = img;
+        thresh_img_ = img;
     }
 
     void Detector::findGoodContours() {
+        
         cv::Canny(thresh_img_ , thresh_img_, canny_param_low_, canny_param_upper_ , canny_kernel_size_);
         std::vector<std::vector<cv::Point>> contours;
         std::vector<cv::Vec4i> hierarchy;
@@ -51,23 +55,29 @@ namespace ariitk::detector {
         for(id=0; id<size ; id+=1){
             cv::drawContours(test, good_contours_, id, cv::Scalar(255,255,255), 3 );
         } 
-        cv::imshow("Test Contour Image", test);
-        cv::waitKey(0);
-        cv::destroyWindow("Test Contour Image");
+    //     cv::imshow("Test_Contour_Image", test);
+    //     cv::waitKey(10);
+    //     cv::destroyWindow("Test_Contour_Image");
     }
 
-    void Detector::findFrameCentre() {
-        int i, size, x, y;
+    void Detector::findFrameCentre(cv::Mat& test) {
+        int i, size, x, y, id;
         float l;
         long int area=-1;
         long int max_area=-1;
+
+        centre_.first = -1;
+        centre_.second = -1;
         std::vector<cv::Point> approx;
         std::vector<std::vector<cv::Point>>::iterator ptr = good_contours_.begin();
         std::vector<std::vector<cv::Point>>::iterator end = good_contours_.end();
-        for( ptr; ptr!=end; ++ptr){
-            cv::approxPolyDP(*ptr,approx, 0.02*cv::arcLength(good_contours_[i], true), true);
+        for( ptr, id=0; ptr!=end; ++ptr, id+=1){
+            cv::approxPolyDP(*ptr,approx, 0.02*cv::arcLength(*ptr, true), true);
             size = approx.size();
+            
             if(size==4){
+                
+                cv::drawContours(test, good_contours_, id, cv::Scalar(255,255,255), 3);
                 x=0;
                 y=0;
                 area = cv::contourArea(*ptr);
@@ -80,10 +90,12 @@ namespace ariitk::detector {
                     }
                     x = x/size;
                     y = y/size;
+                    cv::circle(test,cv::Point(x,y),5,cv::Scalar(0,0,255),-1);
                     centre_.first = x;
                     centre_.second = y;
                 }
             }
         }
+        std::cout<<centre_.first<<" , "<<centre_.second<<std::endl;
     }
 }
