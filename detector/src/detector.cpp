@@ -28,7 +28,7 @@ namespace ariitk::detector {
         cv::inRange( img, hsv_min_, hsv_max_, thresh_img_);
         /*cv::dilate( img, img, cv::Mat(), cv::Point(-1,-1), 2, 1, 1);
         cv::erode( img ,img, cv::Mat(), cv::Point(-1,-1), 2, 1, 1);*/
-        // thresh_img_ = img;
+        thresh_img_ = img;
     }
 
     void Detector::findGoodContours() {
@@ -65,7 +65,7 @@ namespace ariitk::detector {
         std::vector<std::vector<cv::Point>>::iterator ptr = good_contours_.begin();
         std::vector<std::vector<cv::Point>>::iterator end = good_contours_.end();
         for( ptr; ptr!=end; ++ptr){
-            cv::approxPolyDP(*ptr,approx, 0.02*cv::arcLength(good_contours_[i], true), true);
+            cv::approxPolyDP(*ptr,approx, 0.02*cv::arcLength(*ptr, true), true);
             size = approx.size();
             if(size==4){
                 x=0;
