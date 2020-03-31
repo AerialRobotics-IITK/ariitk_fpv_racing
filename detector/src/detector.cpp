@@ -30,6 +30,8 @@ void Detector::thresholdImage(cv::Mat& img) {
     cv::GaussianBlur(img, img, cv::Size(3,3), 0, 0);
     cv::cvtColor(img, img, CV_BGR2HSV);
     cv::inRange(img, hsv_min_, hsv_max_, thresh_img_);
+    good_contours_.clear();
+    good_contours_.shrink_to_fit();
 }
 
 void Detector::findGoodContours() {
