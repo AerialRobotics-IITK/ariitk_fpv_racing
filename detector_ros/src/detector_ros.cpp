@@ -35,15 +35,13 @@ void DetectorROS::run() {
 
 void DetectorROS::imageCallback(const sensor_msgs::ImageConstPtr& msg) {
     cv_bridge::CvImagePtr cv_ptr_;
-    try
-    {
+    try {
        cv_ptr_ = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
     }
-    catch (cv_bridge::Exception& e)
-    {
+    catch (cv_bridge::Exception& e) {
       ROS_ERROR("cv_bridge exception: %s", e.what());
       return;
     }
     img_ = cv_ptr_->image;
 }
-}
+} //detector_ros

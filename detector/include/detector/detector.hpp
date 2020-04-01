@@ -29,4 +29,4 @@ class Detector {
         int canny_param_upper_;
         int canny_kernel_size_;
 };
-}
+} //detector
