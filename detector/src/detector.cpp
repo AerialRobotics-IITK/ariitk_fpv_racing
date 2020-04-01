@@ -20,7 +20,7 @@ namespace ariitk::detector {
     }
 
     void Detector::setHSVMax(const int& h , const int& s , const int& v) {
-        hsv_min_ = cv::Scalar(h,s,v);
+        hsv_max_ = cv::Scalar(h,s,v);
     }
 
     void Detector::thresholdImage(cv::Mat& img) {
@@ -55,9 +55,6 @@ namespace ariitk::detector {
         for(id=0; id<size ; id+=1){
             cv::drawContours(test, good_contours_, id, cv::Scalar(255,255,255), 3 );
         } 
-    //     cv::imshow("Test_Contour_Image", test);
-    //     cv::waitKey(10);
-    //     cv::destroyWindow("Test_Contour_Image");
     }
 
     void Detector::findFrameCentre(cv::Mat& test) {
