@@ -25,22 +25,26 @@ void Detector::setHSVMax(const int& h , const int& s , const int& v) {
 }
 
 void Detector::thresholdImage(cv::Mat& img) {
-    if(img.empty()) { return; };
+    if(img.empty()) { return; }
     
-    cv::GaussianBlur(img, img, cv::Size(3,3), 0, 0);
-    cv::cvtColor(img, img, CV_BGR2HSV);
-    cv::inRange(img, hsv_min_, hsv_max_, thresh_img_);
-    good_contours_.clear();
-    good_contours_.shrink_to_fit();
+    cv::Mat blur_img(img.size(), CV_8UC3);
+    cv::Mat hsv_img(img.size(), CV_8UC3);
+
+    cv::GaussianBlur(img, blur_img, cv::Size(3,3), 0, 0);
+    cv::cvtColor(blur_img, hsv_img, CV_BGR2HSV);
+    cv::inRange(hsv_img, hsv_min_, hsv_max_, thresh_img_);
 }
 
 void Detector::findGoodContours() {
-    cv::Canny(thresh_img_ , thresh_img_, canny_param_low_, canny_param_upper_ , canny_kernel_size_);
+    cv::Mat canny_img(thresh_img_.size(), CV_8UC1);
+    
+    cv::Canny(thresh_img_, canny_img, canny_param_low_, canny_param_upper_, canny_kernel_size_);
 
     std::vector<std::vector<cv::Point>> contours;
     std::vector<cv::Vec4i> hierarchy;
     cv::findContours(thresh_img_, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
+    good_contours_.clear();
     for(auto& contour : contours) { if(cv::contourArea(contour) > min_contour_area_) { good_contours_.push_back(contour); } }
 }
 
@@ -66,7 +70,7 @@ void Detector::findFrameCentre(cv::Mat& board) {
 
             contour_to_draw.clear();
             contour_to_draw.push_back(contour);
-            cv::drawContours(board, contour_to_draw, -1, cv::Scalar(255,255,255), 3);
+            cv::drawContours(board, contour_to_draw, -1, cv::Scalar(0,0,255), 3);
             
             centre_.first = 0; centre_.second = 0;
 
@@ -79,7 +83,10 @@ void Detector::findFrameCentre(cv::Mat& board) {
                 }
                 centre_.first /= 4; centre_.second /= 4;
 
-                cv::circle(board, cv::Point(centre_.first, centre_.second), 5, cv::Scalar(0,0,255), -1);
+                cv::circle(board, cv::Point(centre_.first, centre_.second), 5, cv::Scalar(0,255,0), -1);
+            } else {
+                centre_.first = -1;
+                centre_.second = -1;
             }
         }
     }
