@@ -3,7 +3,7 @@
 namespace ariitk::detector_ros {
 
 void DetectorROS::init(ros::NodeHandle& nh) {
-    img_sub_ = nh.subscribe("/iris/camera_red_iris/image_raw", 1, &DetectorROS::imageCallback, this);
+    img_sub_ = nh.subscribe("image_raw", 1, &DetectorROS::imageCallback, this);
 
     ros::NodeHandle nh_private("~");
 
@@ -16,13 +16,10 @@ void DetectorROS::init(ros::NodeHandle& nh) {
 void DetectorROS::run() {
     if(img_.empty()) { return; };
 
-    cv::Mat centre_board = cv::Mat::zeros(img_.size(), CV_8UC3);
-    cv::Mat contour_board = cv::Mat::zeros(img_.size(), CV_8UC3);
-
     detect_.thresholdImage(img_);
     detect_.findGoodContours();
-    detect_.drawContours(contour_board);
-    detect_.findFrameCentre(centre_board);
+    detect_.drawContours(img_);
+    detect_.findFrameCentre(img_);
 
     std::pair<int, int> centre_pair = detect_.getCentre();
     centre_coord_.x = centre_pair.first;
@@ -30,13 +27,13 @@ void DetectorROS::run() {
     centre_coord_.header.stamp = ros::Time::now();
 
     sensor_msgs::ImagePtr thresh_msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", detect_.getThresh()).toImageMsg();
-    sensor_msgs::ImagePtr contour_msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", contour_board).toImageMsg();
-    sensor_msgs::ImagePtr centre_msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", centre_board).toImageMsg();
+    sensor_msgs::ImagePtr contour_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_).toImageMsg();
+    sensor_msgs::ImagePtr centre_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_).toImageMsg();
 
     thresh_pub_.publish(thresh_msg);
     contour_pub_.publish(contour_msg);    
     centre_img_pub_.publish(centre_msg);
-    centre_pub_.publish(centre_coord_);
+    if(centre_coord_.x != -1 && centre_coord_.y != -1) { centre_pub_.publish(centre_coord_); }
 }
 
 void DetectorROS::imageCallback(const sensor_msgs::ImageConstPtr& msg) {
