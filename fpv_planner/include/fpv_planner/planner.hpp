@@ -6,41 +6,52 @@
 #include <boost/msm/front/functor_row.hpp>
 #include <boost/msm/front/state_machine_def.hpp>
 
+#include <ros/ros.h>
+#include <mavros_msgs/SetMode.h> //For TakeOff
+#include <nav_msgs/Odometry.h>
+
 #define echo(X) std::cout << X << std::endl
 
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
-namespace ariitk::planner 
-{
+
+namespace ariitk::planner {
 
 bool verbose = true;
 
-class fsm : public msm::front::state_machine_def<fsm>
+//state machine commands
+
+struct CmdTakeOff {
+    CmdTakeOff() {}
+};
+
+struct CmdEstimated {
+    CmdEstimated() {}
+};
+
+struct CmdPass {
+    CmdPass() {}
+};
+
+struct CmdGlobalT {
+    CmdGlobalT() {}
+};
+
+class Planner : public msm::front::state_machine_def<fsm>
 {
+    private :
+
+        nav_msgs::Odometry odom_;
+
+        ros::NodeHandle nh;
+        ros::Publisher pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
+
+        ros::Subscriber odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, odom_cb );
+        //Include subscriber for final pose (create msg)
+
+
+
     public:
-
-        //state machine commands
-
-        struct CmdTakeOff
-        {
-            CmdTakeOff()
-            {}
-        };
-        struct CmdEstimated
-        {
-            CmdEstimated()
-            {}
-        };
-        struct CmdPrevEst
-        {
-            CmdPrevEst()
-            {}
-        };
-        struct CmdGlobalT
-        {
-            CmdGlobalT()
-            {}
-        };
 
         template<class Event,class FSM>
         void on_entry(Event const &, FSM &);
@@ -53,7 +64,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         struct Rest : public msm::front::state<>
         {
             template <class Event, class FSM>
-            void on_Entry(Event const &, FSM &)
+            void on_entry(Event const &, FSM &)
             {
                 if (verbose){ echo("Entered Rest state"); }
             }
@@ -68,7 +79,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         struct Hover : public msm::front::state<>
         {
             template <class Event, class FSM>
-            void on_Entry(Event const &, FSM &)
+            void on_entry(Event const &, FSM &)
             {
                 if (verbose){ echo("Entered Hover state"); }
             }
@@ -80,10 +91,10 @@ class fsm : public msm::front::state_machine_def<fsm>
             }
         };
 
-        struct before_pass : public msm::front::state<>
+        struct BeforePass : public msm::front::state<>
         {
             template <class Event, class FSM>
-            void on_Entry(Event const &, FSM &)
+            void on_entry(Event const &, FSM &)
             {
                 if (verbose){ echo("Entered before_pass state"); }
             }
@@ -95,10 +106,10 @@ class fsm : public msm::front::state_machine_def<fsm>
             }
         };
 
-        struct after_pass : public msm::front::state<>
+        struct AfterPass : public msm::front::state<>
         {
             template <class Event, class FSM>
-            void on_Entry(Event const &, FSM &)
+            void on_entry(Event const &, FSM &)
             {
                 if (verbose){ echo("Entered after_pass state"); }
             }
@@ -111,43 +122,41 @@ class fsm : public msm::front::state_machine_def<fsm>
         };
 
         //state transition funcitons
-
         void TakeOff (CmdTakeOff const &cmd);
         void DetectionBased (CmdEstimated const &cmd);
-        void PrevCoord (CmdPrevEst const &cmd);
+        void PrevCoord (CmdPass const &cmd);
         void GlobalT (CmdGlobalT const &cmd);
+
+        //Callback functions
+        void odom_cb(const nav_msgs::Odometry &msg);
 
         //transition table
         
         struct transition_table : mpl::vector<
 
         //      Type           Start             Event             Next               Action                      Gaurd 
-        // +++ ------- + ----------------- + ---------------- + --------------- + ---------------------- + ----------------------------- +++
+        // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
         
-                a_row<    Rest             ,  CmdTakeOff      ,  Hover          , &fsm::TakeOff                                          >,
+                a_row<    Rest             ,  CmdTakeOff      ,  Hover          , &Planner::TakeOff                                          >,
 
-        // +++ ------- + ----------------- + ---------------- + --------------- + ---------------------- + ----------------------------- +++
+        // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
-                a_row<    Hover            ,  CmdEstimated    ,  before_pass    , &fsm::DetectionBased                                   >,
+                a_row<    Hover            ,  CmdEstimated    ,  BeforePass     , &Planner::DetectionBased                                   >,
 
-        // +++ ------- + ----------------- + ---------------- + --------------- + ---------------------- + ----------------------------- +++
+        // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
-                a_row<    before_pass      ,  CmdPrevEst      ,  after_pass     , &fsm::PrevCoord                                        >,
+                a_row<    BeforePass       ,  CmdPass         ,  AfterPass      , &Planner::PrevCoord                                        >,
 
-        // +++ ------- + ----------------- + ---------------- + --------------- + ---------------------- + ----------------------------- +++
+        // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
-                a_row<    after_pass       ,  CmdGlobalT      ,  Hover          , &fsm::GlobalT                                          >
+                a_row<    AfterPass        ,  CmdGlobalT      ,  BeforePass     , &Planner::GlobalT                                          >
 
-        // +++ ------- + ----------------- + ---------------- + --------------- + ---------------------- + ----------------------------- +++
+        // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
         >{
         };
-    
 
 };
 
     
 } // namespace ariitk::planner
-
-
-
