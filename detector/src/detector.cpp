@@ -4,12 +4,6 @@
 namespace ariitk::detector {
 
 Detector::Detector() {
-    hsv_min_ = cv::Scalar(100,110,110);
-    hsv_max_ = cv::Scalar(179,255,255);
-    canny_param_low_ = 200;
-    canny_param_upper_ = 300;
-    canny_kernel_size_ = 3;
-    min_contour_area_ = 500;
 }
 
 Detector::~Detector() {
@@ -22,6 +16,16 @@ void Detector::setHSVMin(const int& h , const int& s , const int& v) {
 
 void Detector::setHSVMax(const int& h , const int& s , const int& v) {
     hsv_max_ = cv::Scalar(h,s,v);
+}
+
+void Detector::setCannyParams(const int& l, const int& u, const int& s) {
+    canny_param_low_ = l;
+    canny_param_upper_ = u;
+    canny_kernel_size_ = s;
+}
+
+void Detector::setMinArea(const int& a) {
+    min_contour_area_ = a;
 }
 
 void Detector::thresholdImage(cv::Mat& img) {

@@ -2,10 +2,22 @@
 
 namespace ariitk::detector_ros {
 
+int h_min,s_min,v_min,h_max,s_max,v_max,canny_lower,canny_upper,min_contour_area,canny_ker;
+
 void DetectorROS::init(ros::NodeHandle& nh) {
+    
     img_sub_ = nh.subscribe("image_raw", 1, &DetectorROS::imageCallback, this);
 
+    nh.getParam("h_min",h_min);nh.getParam("s_min",s_min);nh.getParam("v_min",v_min);
+    nh.getParam("h_max",h_max);nh.getParam("s_max",s_max);nh.getParam("v_max",v_max);
+    nh.getParam("canny_lower",canny_lower);nh.getParam("canny_upper",canny_upper);nh.getParam("min_contour_area",min_contour_area);nh.getParam("canny_ker",canny_ker);
+    
     ros::NodeHandle nh_private("~");
+
+    detect_.setHSVMin(h_min,s_min,v_min);
+    detect_.setHSVMax(h_max,s_max,v_max);
+    detect_.setCannyParams(canny_lower,canny_upper,canny_ker);
+    detect_.setMinArea(min_contour_area);
 
     centre_pub_ = nh_private.advertise<detector_msgs::centre>("centre_coord", 10);
     thresh_pub_= nh_private.advertise<sensor_msgs::Image>("thresh_img", 10);

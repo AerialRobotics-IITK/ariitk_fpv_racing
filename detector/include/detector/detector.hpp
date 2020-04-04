@@ -15,7 +15,10 @@ class Detector {
     
         void setHSVMin(const int& , const int& , const int&);
         void setHSVMax(const int& , const int& , const int&);
-    
+
+        void setCannyParams(const int&, const int& , const int& );
+        void setMinArea(const int& );
+        
         void thresholdImage(cv::Mat& );
         void findGoodContours();
         void drawContours(cv::Mat&);
