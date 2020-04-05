@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+        <!-- gazebo configs -->
+        <arg name="gui"             default="true"/>
+        <arg name="debug"           default="false"/>
+        <arg name="verbose"         default="false"/>
+        <arg name="paused"          default="false"/>
+        <arg name="respawn_gazebo"  default="true"/>
+    
+        <!-- Gazebo sim -->
+        <env name="GAZEBO_MODEL_PATH"       value="${GAZEBO_MODEL_PATH}:$(find simulator)/worlds:$(find simulator)/models:$(find rotors_gazebo)/models"/>
+        <env name="GAZEBO_RESOURCE_PATH"    value="${GAZEBO_RESOURCE_PATH}:$(find simulator)/worlds:$(find simulator)/models:$(find rotors_gazebo)/models"/>
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="gui"             value="$(arg gui)"/>
+            <arg name="world_name"      value="$(find simulator)/worlds/test_arena.world"/>
+            <arg name="debug"           value="$(arg debug)"/>
+            <arg name="verbose"         value="$(arg verbose)"/>
+            <arg name="paused"          value="$(arg paused)"/>
+            <arg name="respawn_gazebo"  value="$(arg respawn_gazebo)"/>
+        </include>
+</launch>
