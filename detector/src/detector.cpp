@@ -3,29 +3,14 @@
 
 namespace ariitk::detector {
 
-Detector::Detector() {
-}
-
 Detector::~Detector() {
     cv::destroyAllWindows();
-}
-
-void Detector::setHSVMin(const int& h , const int& s , const int& v) {
-    hsv_min_ = cv::Scalar(h,s,v);
-}
-
-void Detector::setHSVMax(const int& h , const int& s , const int& v) {
-    hsv_max_ = cv::Scalar(h,s,v);
 }
 
 void Detector::setCannyParams(const int& l, const int& u, const int& s) {
     canny_param_low_ = l;
     canny_param_upper_ = u;
     canny_kernel_size_ = s;
-}
-
-void Detector::setMinArea(const int& a) {
-    min_contour_area_ = a;
 }
 
 void Detector::thresholdImage(cv::Mat& img) {

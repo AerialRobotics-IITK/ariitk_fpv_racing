@@ -2,18 +2,29 @@
 
 namespace ariitk::detector_ros {
 
-int h_min,s_min,v_min,h_max,s_max,v_max,canny_lower,canny_upper,min_contour_area,canny_ker;
 
 void DetectorROS::init(ros::NodeHandle& nh) {
     
+    int h_min, s_min, v_min;
+    int h_max, s_max, v_max;
+    int canny_lower, canny_upper, canny_ker;
+    int min_contour_area;
+    
     img_sub_ = nh.subscribe("image_raw", 1, &DetectorROS::imageCallback, this);
 
-    nh.getParam("h_min",h_min);nh.getParam("s_min",s_min);nh.getParam("v_min",v_min);
-    nh.getParam("h_max",h_max);nh.getParam("s_max",s_max);nh.getParam("v_max",v_max);
-    nh.getParam("canny_lower",canny_lower);nh.getParam("canny_upper",canny_upper);nh.getParam("min_contour_area",min_contour_area);nh.getParam("canny_ker",canny_ker);
-    
     ros::NodeHandle nh_private("~");
 
+    nh_private.getParam("h_min",h_min);
+    nh_private.getParam("s_min",s_min); 
+    nh_private.getParam("v_min",v_min);
+    nh_private.getParam("h_max",h_max); 
+    nh_private.getParam("s_max",s_max); 
+    nh_private.getParam("v_max",v_max);
+    nh_private.getParam("canny_lower",canny_lower);
+    nh_private.getParam("canny_upper",canny_upper);
+    nh_private.getParam("canny_ker",canny_ker);
+    nh_private.getParam("min_contour_area",min_contour_area);
+    
     detect_.setHSVMin(h_min,s_min,v_min);
     detect_.setHSVMax(h_max,s_max,v_max);
     detect_.setCannyParams(canny_lower,canny_upper,canny_ker);
