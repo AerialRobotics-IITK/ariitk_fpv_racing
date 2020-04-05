@@ -5,6 +5,8 @@
 	</include>		 
 	<node pkg="control" type="controller" name="controller"/>
 	
-	<node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen" />
-	
+	<node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen">
+		<rosparam file="$(find detector_ros)/config/param.yaml"/>
+		<remap from="image_raw" to="iris/camera_red_iris/image_raw" />
+	</node>
 </launch>

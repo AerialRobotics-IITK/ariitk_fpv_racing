@@ -6,7 +6,7 @@
 #include <detector/detector.hpp>
 #include <detector_msgs/centre.h>
 
-namespace ariitk::detector_ros{
+namespace ariitk::detector_ros {
 
 class DetectorROS {
     public:

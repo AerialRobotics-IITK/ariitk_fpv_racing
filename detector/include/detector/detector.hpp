@@ -8,14 +8,24 @@ namespace ariitk::detector {
 
 class Detector {
     public : 
-        Detector();
+        Detector() {};
         ~Detector();
 
         std::pair<int, int> getCentre() { return centre_;};
-    
-        void setHSVMin(const int& , const int& , const int&);
-        void setHSVMax(const int& , const int& , const int&);
-    
+            
+        void setHSVMin(const int& h , const int& s , const int& v) {
+            hsv_min_ = cv::Scalar(h,s,v);
+        }
+        void setHSVMax(const int& h , const int& s , const int& v) {
+            hsv_max_ = cv::Scalar(h,s,v);
+        }
+
+        void setMinArea(const int& a) {
+            min_contour_area_ = a;
+        }
+
+        void setCannyParams(const int&, const int& , const int& );
+
         void thresholdImage(cv::Mat& );
         void findGoodContours();
         void drawContours(cv::Mat&);
