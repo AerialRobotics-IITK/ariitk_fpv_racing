@@ -8,19 +8,19 @@
 
     <group ns="$(arg mav_name)">
         <include file="$(find rotors_gazebo)/launch/spawn_mav.launch">
-          <arg name="mav_name" value="$(arg mav_name)" />
-          <arg name="model" value="$(find simulator)/models/urdf/mav_with_camera.gazebo" />
-          <arg name="enable_logging" value="$(arg enable_logging)" />
-          <arg name="enable_ground_truth" value="$(arg enable_ground_truth)" />
-          <arg name="log_file" value="$(arg mav_name)"/>
+          <arg name="mav_name"              value="$(arg mav_name)" />
+          <arg name="model"                 value="$(find simulator)/models/urdf/mav_with_camera.gazebo" />
+          <arg name="enable_logging"        value="$(arg enable_logging)" />
+          <arg name="enable_ground_truth"   value="$(arg enable_ground_truth)" />
+          <arg name="log_file"              value="$(arg mav_name)"/>
         </include>
         <node name="mav_nonlinear_mpc" pkg="mav_nonlinear_mpc" type="nonlinear_mpc_node" respawn="true" clear_params="true" output="screen">
             <remap from="odometry" to="odometry_sensor1/odometry" />
             <rosparam file="$(find mav_nonlinear_mpc)/resources/nonlinear_mpc_$(arg mav_name).yaml" />
             <rosparam file="$(find mav_disturbance_observer)/resources/disturbance_observer_$(arg mav_name).yaml"/>
-            <param name="use_rc_teleop" value="false"/>
-            <param name="verbose" value="false" />
-            <param name="reference_frame" value="world"/>
+            <param name="use_rc_teleop"     value="false"/>
+            <param name="verbose"           value="false" />
+            <param name="reference_frame"   value="world"/>
         </node>
         <node name="PID_attitude_controller" pkg="mav_lowlevel_attitude_controller" type="mav_pid_attitude_controller_node" respawn="true" clear_params="true" output="screen">
             <remap from="odometry" to="odometry_sensor1/odometry" />
@@ -28,10 +28,10 @@
         </node>
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
-        <node name="waypoint_publisher" pkg="rotors_gazebo" type="waypoint_publisher" output="screen" args="0 0 1 0 5"/>
+        <node name="waypoint_publisher" pkg="rotors_gazebo" type="waypoint_publisher" output="screen" args="0 0 2 0 5"/>
         <node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen">
-            <remap from="/iris/camera_red_iris/image_raw" to="camera_front/image_raw"/>
+            <remap from="image_raw" to="camera_front/image_raw"/>
         </node>
     </group>
-    
+
 </launch>
