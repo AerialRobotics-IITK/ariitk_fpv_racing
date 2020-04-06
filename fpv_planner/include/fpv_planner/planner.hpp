@@ -37,7 +37,7 @@ struct CmdGlobalT {
     CmdGlobalT() {}
 };
 
-class Planner : public msm::front::state_machine_def<fsm>
+class fsm : public msm::front::state_machine_def<fsm>
 {
     private :
 
@@ -137,19 +137,19 @@ class Planner : public msm::front::state_machine_def<fsm>
         //      Type           Start             Event             Next               Action                      Gaurd 
         // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
         
-                a_row<    Rest             ,  CmdTakeOff      ,  Hover          , &Planner::TakeOff                                          >,
+                a_row<    Rest             ,  CmdTakeOff      ,  Hover          , &fsm::TakeOff                                          >,
 
         // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
-                a_row<    Hover            ,  CmdEstimated    ,  BeforePass     , &Planner::DetectionBased                                   >,
+                a_row<    Hover            ,  CmdEstimated    ,  BeforePass     , &fsm::DetectionBased                                   >,
 
         // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
-                a_row<    BeforePass       ,  CmdPass         ,  AfterPass      , &Planner::PrevCoord                                        >,
+                a_row<    BeforePass       ,  CmdPass         ,  AfterPass      , &fsm::PrevCoord                                        >,
 
         // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 
-                a_row<    AfterPass        ,  CmdGlobalT      ,  BeforePass     , &Planner::GlobalT                                          >
+                a_row<    AfterPass        ,  CmdGlobalT      ,  BeforePass     , &fsm::GlobalT                                          >
 
         // +++ ------- + ----------------- + ---------------- + --------------- + -------------------------- + ----------------------------- +++
 

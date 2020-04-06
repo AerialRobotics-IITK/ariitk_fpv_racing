@@ -3,19 +3,20 @@
 
 namespace ariitk::planner {
 
-    void Planner::odom_cb(const nav_msgs::Odometry &msg) {
+    void fsm::odom_cb(const nav_msgs::Odometry &msg) {
         odom_ = msg;
     }
 
-    void Planner::TakeOff() {
+    void fsm::TakeOff() {
+
+        
+    }
+
+    void fsm::DetectionBased() {
 
     }
 
-    void Planner::DetectionBased() {
-
-    }
-
-    void Planner::PrevCoord() {
+    void fsm::PrevCoord() {
         //frame_msg = a,b,c
 
         geometry_msgs::PoseStamped calc_coord; 
@@ -29,7 +30,7 @@ namespace ariitk::planner {
         //before_pass_vector  - store it   
     }
     
-    void Planner::GlobalT() {
+    void fsm::GlobalT() {
         //Rotate drone according to next frame
 
         //call subscriber to get odom_
