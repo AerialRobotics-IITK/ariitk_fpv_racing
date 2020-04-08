@@ -48,4 +48,4 @@ void PoseEstimation::QuadToGlob(nav_msgs::Odometry odom) {
         
 }
 
-}
+} // ariitk::pose_estimation

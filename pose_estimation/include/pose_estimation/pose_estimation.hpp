@@ -3,7 +3,7 @@
 #include <eigen3/Eigen/Geometry>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
-#include <detector_msgs/centre>
+#include <detector_msgs/centre.h>
 
 namespace ariitk::pose_estimation {
 
@@ -18,14 +18,9 @@ class PoseEstimation {
         void setQuaternion(nav_msgs::Odometry odom);
         void CamToQuad();
         void QuadToGlob(nav_msgs::Odometry odom);
+        Eigen::Vector3d getGlobCoord() { return glob_coord_; };
 
      private :
-
-        ros::NodeHandle nh("~");
-
-        //ros::Publisher pose_pub_ = nh.advertise<>("estimated_pose",10);
-
-        ros::Subscriber centre_sub_ = nh.Subscriber<detecto>
 
         Eigen::Matrix3d scale_up_;
         Eigen::Matrix3d cam_matrix_;
@@ -39,5 +34,5 @@ class PoseEstimation {
         Eigen::Vector3d glob_coord_;
 };
 
-} //pose_estimation
+} // ariitk::pose_estimation
 
