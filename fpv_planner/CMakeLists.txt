@@ -9,5 +9,9 @@ set(CMAKE_BUILD_TYPE Release)
 
 cs_add_library(fpv_planner_lib src/planner.cpp)
 
+cs_add_executable(planner_node src/planner_node.cpp)
+cs_add_executable(planner src/planner.cpp)
+
+
 cs_install()
 cs_export()
