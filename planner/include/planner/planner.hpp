@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <mavros_msgs/SetMode.h> //For TakeOff
 #include <nav_msgs/Odometry.h>
+#include <geometry_msgs/PoseStamped.h>
 
 #define echo(X) std::cout << X << std::endl
 
@@ -17,7 +18,7 @@ namespace mpl = boost::mpl;
 
 namespace ariitk::planner {
 
-bool verbose = true;
+
 
 //state machine commands
 
@@ -46,13 +47,13 @@ class fsm : public msm::front::state_machine_def<fsm>
         ros::NodeHandle nh;
         ros::Publisher pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
 
-        ros::Subscriber odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, odom_cb );
+        ros::Subscriber odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odom_cb,this );
         //Include subscriber for final pose (create msg)
 
 
 
     public:
-
+        bool verbose = true;
         template<class Event,class FSM>
         void on_entry(Event const &, FSM &);
         
