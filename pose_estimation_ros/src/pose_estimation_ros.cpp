@@ -25,11 +25,11 @@ void PoseEstimationROS::run() {
     pose_est_.QuadToGlob(odom_);
     glob_coord_ = pose_est_.getGlobCoord();
 
-    global_coord.x = glob_coord_[0];
-    global_coord.y = glob_coord_[1];
-    global_coord.z = glob_coord_[2];
+    global_coord_.x = glob_coord_(0);
+    global_coord_.y = glob_coord_(1);
+    global_coord_.z = glob_coord_(2);
 
-    glob_coord_pub_.publish(global_coord);
+    glob_coord_pub_.publish(global_coord_);
 }
 
 void PoseEstimationROS::centreCallback(const detector_msgs::centre& msg) {

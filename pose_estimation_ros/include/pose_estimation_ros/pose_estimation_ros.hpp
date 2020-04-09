@@ -22,6 +22,7 @@ class PoseEstimationROS {
         void odomCallback(const nav_msgs::Odometry& msg);
 
         detector_msgs::centre centre_coord_;
+        detector_msgs::global_coord global_coord_;
         nav_msgs::Odometry odom_;
         Eigen::Vector3d glob_coord_;
 
