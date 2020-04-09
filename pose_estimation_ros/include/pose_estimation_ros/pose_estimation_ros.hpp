@@ -4,6 +4,8 @@
 #include <eigen3/Eigen/Geometry>
 
 #include <detector_msgs/centre.h>
+#include <detector_msgs/global_coord.h>
+#include <detector_msgs/rotation.h>
 #include <pose_estimation/pose_estimation.hpp>
 
 namespace ariitk::pose_estimation_ros {
@@ -28,8 +30,9 @@ class PoseEstimationROS {
 
         ariitk::pose_estimation::PoseEstimation pose_est_;
 
-        //Publishers TBD
-        //Publisher Datatypes TBD
+        ros::Publisher glob_coord_pub_;
+        ros::Publisher rotation_pub_;
+
 };
 
 }// namespace ariitk::pose_estimation_ros

@@ -10,7 +10,8 @@ void PoseEstimationROS::init(ros::NodeHandle& nh) {
 
     ros::NodeHandle nh_private("~");
 
-    //Define publishers here
+    glob_coord_pub_ = nh_private.advertise<detector_msgs::global_coord>("estimated_coord", 10);
+    rotation_pub_ = nh_private.advertise<detector_msgs::rotation>("est_rotation", 10);
 }
 
 void PoseEstimationROS::run() {
@@ -24,6 +25,11 @@ void PoseEstimationROS::run() {
     pose_est_.QuadToGlob(odom_);
     glob_coord_ = pose_est_.getGlobCoord();
 
+    global_coord.x = glob_coord_[0];
+    global_coord.y = glob_coord_[1];
+    global_coord.z = glob_coord_[2];
+
+    glob_coord_pub_.publish(global_coord);
 }
 
 void PoseEstimationROS::centreCallback(const detector_msgs::centre& msg) {
