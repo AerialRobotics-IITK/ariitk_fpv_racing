@@ -1,22 +1,55 @@
 #include <planner/planner.hpp>
-#include <iostream>
+
+#define sq(x) (x)*(x)
 
 namespace ariitk::planner {
 
-    void fsm::odom_cb(const nav_msgs::Odometry &msg) {
-        odom_ = msg;
+    fsm::fsm(ros::NodeHandle& nh) {
+        odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &planner::fsm::odomCallback, this);
+        centre_sub_ = nh.subscribe("centre_coord", 10, &planner::fsm::centreCallback, this);
+        est_pose_sub_ = nh.subscribe("estimated_coord", 10, &planner::fsm::estimatedCallback, this);
+
+        pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
     }
 
     void fsm::TakeOff(CmdTakeOff const &cmd) {
 
-        
     }
 
     void fsm::DetectionBased(CmdEstimated const &cmd) {
         ros::Rate looprate(20);
-        while(1){
+        bool flag = true;
+        while(flag) {
             ros::spinOnce();
-             
+            double x = odom_.pose.pose.position.x;
+            double y = odom_.pose.pose.position.y;
+            double z = odom_.pose.pose.position.z;
+            if(centre_.x == -1 || centre_.y ==-1) {
+                double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
+                if(dist < 2) {
+                    flag = false;
+                    continue;
+                }
+                else if (dist >=2 ) {
+                    setpt_.pose.position.x = rough_pose_.x;
+                    setpt_.pose.position.y = rough_pose_.y;
+                    setpt_.pose.position.z = rough_pose_.z;
+                    pose_pub_.publish(setpt_);
+                }     
+            }
+            else {
+                double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
+                if(dist < 2) {
+                    flag = false;
+                    continue;
+                }
+                else if (dist >=2 ) {
+                    setpt_.pose.position.x = estimated_pose_.x;
+                    setpt_.pose.position.y = estimated_pose_.y;
+                    setpt_.pose.position.z = estimated_pose_.z;
+                    pose_pub_.publish(setpt_);
+                }                
+            }     
         }
     }
 
@@ -40,6 +73,41 @@ namespace ariitk::planner {
     }
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
+
+        ros::Rate looprate(20);
+        bool flag = true;
+        while(flag) {
+            ros::spinOnce();
+            double x = odom_.pose.pose.position.x;
+            double y = odom_.pose.pose.position.y;
+            double z = odom_.pose.pose.position.z;
+            if(centre_.x == -1 || centre_.y ==-1) {
+                double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
+                if(dist < 2) {
+                    flag = false;
+                    continue;
+                }
+                else if (dist >=2 ) {
+                    setpt_.pose.position.x = rough_pose_.x;
+                    setpt_.pose.position.y = rough_pose_.y;
+                    setpt_.pose.position.z = rough_pose_.z;
+                    pose_pub_.publish(setpt_);
+                }     
+            }
+            else {
+                double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
+                if(dist < 2) {
+                    flag = false;
+                    continue;
+                }
+                else if (dist >=2 ) {
+                    setpt_.pose.position.x = estimated_pose_.x;
+                    setpt_.pose.position.y = estimated_pose_.y;
+                    setpt_.pose.position.z = estimated_pose_.z;
+                    pose_pub_.publish(setpt_);
+                }                
+            }     
+        }
         //Rotate drone according to next frame
 
         //call subscriber to get odom_

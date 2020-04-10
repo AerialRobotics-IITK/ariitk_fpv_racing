@@ -5,11 +5,16 @@
 #include <boost/msm/front/euml/operator.hpp>
 #include <boost/msm/front/functor_row.hpp>
 #include <boost/msm/front/state_machine_def.hpp>
+#include <iostream>
+#include <math.h>
 
 #include <ros/ros.h>
 #include <mavros_msgs/SetMode.h> //For TakeOff
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <detector_msgs/centre.h>
+#include <detector_msgs/global_coord.h>
+#include <detector_msgs/rotation.h>
 
 #define echo(X) std::cout << X << std::endl
 
@@ -17,8 +22,6 @@ namespace msm = boost::msm;
 namespace mpl = boost::mpl;
 
 namespace ariitk::planner {
-
-
 
 //state machine commands
 
@@ -43,15 +46,16 @@ class fsm : public msm::front::state_machine_def<fsm>
     private :
 
         nav_msgs::Odometry odom_;
+        detector_msgs::centre centre_;
+        detector_msgs::global_coord estimated_pose_;
+        detector_msgs::global_coord rough_pose_;
+        geometry_msgs::PoseStamped setpt_;
 
-        ros::NodeHandle nh;
-        //ros::Publisher pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
+        ros::Publisher pose_pub_;
 
         ros::Subscriber odom_sub_; 
-        ros::Subscriber center_sub_;
+        ros::Subscriber centre_sub_;
         ros::Subscriber est_pose_sub_;
-
-
 
     public:
         bool verbose = true;
@@ -123,6 +127,8 @@ class fsm : public msm::front::state_machine_def<fsm>
             }
         };
 
+        fsm(ros::NodeHandle& nh);
+
         //state transition funcitons
         void TakeOff (CmdTakeOff const &cmd);
         void DetectionBased (CmdEstimated const &cmd);
@@ -130,7 +136,9 @@ class fsm : public msm::front::state_machine_def<fsm>
         void GlobalT (CmdGlobalT const &cmd);
 
         //Callback functions
-        void odom_cb(const nav_msgs::Odometry &msg);
+        void odomCallback(const nav_msgs::Odometry &msg) { odom_ = msg; };
+        void centreCallback(const detector_msgs::centre &msg) { centre_ = msg; };
+        void estimatedCallback(const detector_msgs::global_coord &msg) { estimated_pose_ = msg; }; 
 
         //transition table
         
