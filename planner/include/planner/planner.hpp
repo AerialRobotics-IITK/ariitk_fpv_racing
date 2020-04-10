@@ -45,10 +45,11 @@ class fsm : public msm::front::state_machine_def<fsm>
         nav_msgs::Odometry odom_;
 
         ros::NodeHandle nh;
-        ros::Publisher pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
+        //ros::Publisher pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
 
-        ros::Subscriber odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odom_cb,this );
-        //Include subscriber for final pose (create msg)
+        ros::Subscriber odom_sub_; 
+        ros::Subscriber center_sub_;
+        ros::Subscriber est_pose_sub_;
 
 
 

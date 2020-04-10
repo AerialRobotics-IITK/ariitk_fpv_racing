@@ -13,7 +13,11 @@ namespace ariitk::planner {
     }
 
     void fsm::DetectionBased(CmdEstimated const &cmd) {
-
+        ros::Rate looprate(20);
+        while(1){
+            ros::spinOnce();
+             
+        }
     }
 
     void fsm::PrevCoord(CmdPass const &cmd) {
