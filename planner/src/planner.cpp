@@ -1,10 +1,10 @@
 #include <planner/planner.hpp>
 
 #define sq(x) (x)*(x)
-
 namespace ariitk::planner {
 
-    fsm::fsm(ros::NodeHandle& nh) {
+    bool fsm::verbose =true;
+    void fsm::init(ros::NodeHandle& nh) {
         odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &planner::fsm::odomCallback, this);
         centre_sub_ = nh.subscribe("centre_coord", 10, &planner::fsm::centreCallback, this);
         est_pose_sub_ = nh.subscribe("estimated_coord", 10, &planner::fsm::estimatedCallback, this);

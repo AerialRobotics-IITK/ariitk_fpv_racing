@@ -1,6 +1,11 @@
 #include <planner/planner.hpp>
 #include <ros/ros.h>
 
+namespace msm = boost::msm;
+namespace mpl = boost::mpl;
+
+typedef msm::back::state_machine<ariitk::planner::fsm> fsm_;
+
 namespace ariitk::planner_ros {
 
 class fsmROS {
@@ -11,8 +16,9 @@ class fsmROS {
         void run();
 
     private:
-        
-        ariitk::planner::fsm fsm_;
+        fsm_ machine;
+
+
 };
 
 } //namespace ariitk::planner_ros

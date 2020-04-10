@@ -58,12 +58,12 @@ class fsm : public msm::front::state_machine_def<fsm>
         ros::Subscriber est_pose_sub_;
 
     public:
-        bool verbose = true;
+        static bool verbose;
         template<class Event,class FSM>
-        void on_entry(Event const &, FSM &);
+        void on_entry(Event const &, FSM &){};
         
         template<class Event,class FSM>
-        void on_exit(Event const &, FSM &);
+        void on_exit(Event const &, FSM &){};
 
         //state struct definitons
 
@@ -127,8 +127,10 @@ class fsm : public msm::front::state_machine_def<fsm>
             }
         };
 
-        fsm(ros::NodeHandle& nh);
+        typedef Rest initial_state;
 
+        //fsm(ros::NodeHandle& nh);
+        void init(ros::NodeHandle& nh);
         //state transition funcitons
         void TakeOff (CmdTakeOff const &cmd);
         void DetectionBased (CmdEstimated const &cmd);
@@ -140,6 +142,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         void centreCallback(const detector_msgs::centre &msg) { centre_ = msg; };
         void estimatedCallback(const detector_msgs::global_coord &msg) { estimated_pose_ = msg; }; 
 
+    
         //transition table
         
         struct transition_table : mpl::vector<
@@ -168,5 +171,7 @@ class fsm : public msm::front::state_machine_def<fsm>
 
 };
 
-    
+//bool fsm::verbose {true};
+// typedef msm::back::state_machine<fsm> fsm_;
+
 } // namespace ariitk::planner
