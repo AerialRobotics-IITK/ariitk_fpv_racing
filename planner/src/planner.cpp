@@ -8,11 +8,62 @@ namespace ariitk::planner {
         odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &planner::fsm::odomCallback, this);
         centre_sub_ = nh.subscribe("centre_coord", 10, &planner::fsm::centreCallback, this);
         est_pose_sub_ = nh.subscribe("estimated_coord", 10, &planner::fsm::estimatedCallback, this);
+        state_sub_ = nh.subscribe("mavros/state", 10, &planner::fsm::stateCallback, this);
+
+        ros::ServiceClient arming_client_ = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
+        ros::ServiceClient set_mode_client_ = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
 
         pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
     }
 
     void fsm::TakeOff(CmdTakeOff const &cmd) {
+        ros::Rate rate(20);
+        
+        while(ros::ok() && !current_state_.connected) {
+            ros::spinOnce();
+            rate.sleep();
+        }
+        
+        geometry_msgs::PoseStamped pose;
+        pose.pose.position.x = 0;
+        pose.pose.position.y = 0;
+        pose.pose.position.z = 2;
+
+        for(int i = 100; ros::ok() && i > 0; --i){
+            pose_pub_.publish(pose);
+            ros::spinOnce();
+            rate.sleep();
+        }
+
+        mavros_msgs::SetMode offb_set_mode;
+        offb_set_mode.request.custom_mode = "OFFBOARD";
+
+        mavros_msgs::CommandBool arm_cmd;
+        arm_cmd.request.value = true;
+
+        ros::Time last_request = ros::Time::now();
+
+        while(ros::ok()){
+            if( current_state_.mode != "OFFBOARD" && (ros::Time::now() - last_request > ros::Duration(5.0))) {
+                if( set_mode_client_.call(offb_set_mode) && offb_set_mode.response.mode_sent) {
+                    ROS_INFO("Offboard enabled");
+                }
+                last_request = ros::Time::now();
+            } 
+            else {
+                if( !current_state_.armed && (ros::Time::now() - last_request > ros::Duration(5.0))) {
+                    if( arming_client_.call(arm_cmd) && arm_cmd.response.success) {
+                        ROS_INFO("Vehicle armed");
+                    }
+                    last_request = ros::Time::now();
+                }
+            }
+
+            pose_pub_.publish(pose);
+
+            ros::spinOnce();
+            rate.sleep();
+        }
 
     }
 

@@ -9,6 +9,8 @@
 #include <math.h>
 
 #include <ros/ros.h>
+#include <mavros_msgs/CommandBool.h>
+#include <mavros_msgs/State.h>
 #include <mavros_msgs/SetMode.h> //For TakeOff
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -50,12 +52,17 @@ class fsm : public msm::front::state_machine_def<fsm>
         detector_msgs::global_coord estimated_pose_;
         detector_msgs::global_coord rough_pose_;
         geometry_msgs::PoseStamped setpt_;
+        mavros_msgs::State current_state_;
 
         ros::Publisher pose_pub_;
 
         ros::Subscriber odom_sub_; 
         ros::Subscriber centre_sub_;
         ros::Subscriber est_pose_sub_;
+        ros::Subscriber state_sub_;
+
+        ros::ServiceClient arming_client_;
+        ros::ServiceClient set_mode_client_;
 
     public:
         static bool verbose;
@@ -141,6 +148,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         void odomCallback(const nav_msgs::Odometry &msg) { odom_ = msg; };
         void centreCallback(const detector_msgs::centre &msg) { centre_ = msg; };
         void estimatedCallback(const detector_msgs::global_coord &msg) { estimated_pose_ = msg; }; 
+        void stateCallback(const mavros_msgs::State::ConstPtr& msg){ current_state_ = *msg; };
 
     
         //transition table
