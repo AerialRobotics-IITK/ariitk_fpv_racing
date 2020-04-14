@@ -5,25 +5,28 @@ namespace ariitk::planner {
 
     bool fsm::verbose =true;
     void fsm::init(ros::NodeHandle& nh) {
-        odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &planner::fsm::odomCallback, this);
-        centre_sub_ = nh.subscribe("centre_coord", 10, &planner::fsm::centreCallback, this);
-        est_pose_sub_ = nh.subscribe("estimated_coord", 10, &planner::fsm::estimatedCallback, this);
-        state_sub_ = nh.subscribe("mavros/state", 10, &planner::fsm::stateCallback, this);
+        odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odomCallback, this);
+        std::cout << "subscribe hua " <<std::endl;
+        centre_sub_ = nh.subscribe("centre_coord", 10, &fsm::centreCallback, this);
+        est_pose_sub_ = nh.subscribe("estimated_coord", 10, &fsm::estimatedCallback, this);
+        state_sub_ = nh.subscribe("mavros/state", 10, &fsm::stateCallback, this);
 
         ros::ServiceClient arming_client_ = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
         ros::ServiceClient set_mode_client_ = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
-
         pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
+
+        std::cout << "init chal raha hai"<<std::endl;
     }
 
     void fsm::TakeOff(CmdTakeOff const &cmd) {
         ros::Rate rate(20);
-        
-        while(ros::ok() && !current_state_.connected) {
+        std::cout << "takeoff chal raha hai"<<std::endl;
+        while(!current_state_.connected) {
+            std::cout <<current_state_.header.seq <<std::endl;
             ros::spinOnce();
             rate.sleep();
         }
-        
+        std::cout<<"start ho gaya_2"<<std::endl;
         geometry_msgs::PoseStamped pose;
         pose.pose.position.x = 0;
         pose.pose.position.y = 0;
@@ -34,7 +37,7 @@ namespace ariitk::planner {
             ros::spinOnce();
             rate.sleep();
         }
-
+        std::cout<<"start ho gaya_3"<<std::endl;
         mavros_msgs::SetMode offb_set_mode;
         offb_set_mode.request.custom_mode = "OFFBOARD";
 
@@ -58,9 +61,9 @@ namespace ariitk::planner {
                     last_request = ros::Time::now();
                 }
             }
-
+            std::cout<<"start ho gaya_4"<<std::endl;
             pose_pub_.publish(pose);
-
+            std::cout<<"start ho gaya_5"<<std::endl;
             ros::spinOnce();
             rate.sleep();
         }

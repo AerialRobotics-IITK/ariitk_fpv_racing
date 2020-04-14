@@ -4,12 +4,33 @@ namespace ariitk::pose_estimation {
 
 PoseEstimation::PoseEstimation() {
     
-    //set cam _to_quad
+    //set cam _to_quad_
     //set cam_matrix_
+
+    cam_matrix_(0,0) = 476.7030836014194;
+    cam_matrix_(0,1) = 0;
+    cam_matrix_(0,2) = 400.5;
+    cam_matrix_(1,0) = 0;
+    cam_matrix_(1,1) = 476.7030836014194;
+    cam_matrix_(1,2) = 400.5;
+    cam_matrix_(2,0) = 0;
+    cam_matrix_(2,1) = 0;
+    cam_matrix_(2,2) = 1;
+    
+    cam_to_quad_(0,0) = 0;
+    cam_to_quad_(0,1) = 0;
+    cam_to_quad_(0,2) = 1;
+    cam_to_quad_(1,0) = 0;
+    cam_to_quad_(1,1) = -1;
+    cam_to_quad_(1,2) = 0;
+    cam_to_quad_(2,0) = -1;
+    cam_to_quad_(2,1) = 0;
+    cam_to_quad_(2,2) = 0;
+
 
     img_vec_(0)=0;
     img_vec_(1)=0;
-    img_vec_(2)=0;
+    img_vec_(2)=1;
 
 }
 void PoseEstimation::getDistance(float dist=0.0) {
@@ -37,7 +58,8 @@ void PoseEstimation::setQuaternion(nav_msgs::Odometry odom) {
 
 void PoseEstimation::CamToQuad() {
     Eigen::Matrix3d inv_cam_matrix = cam_matrix_.inverse();
-    quad_coord_ = cam_to_quad_*scale_up_*inv_cam_matrix*img_vec_ + t_cam_;
+    quad_coord_ = cam_to_quad_*scale_up_*inv_cam_matrix*img_vec_ /*+ t_cam_*/;
+    //std::cout << quad_coord_ <<std::endl;
 }
 
 void PoseEstimation::QuadToGlob(nav_msgs::Odometry odom) {

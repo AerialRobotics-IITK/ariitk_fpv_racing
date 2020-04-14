@@ -148,7 +148,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         void odomCallback(const nav_msgs::Odometry &msg) { odom_ = msg; };
         void centreCallback(const detector_msgs::centre &msg) { centre_ = msg; };
         void estimatedCallback(const detector_msgs::global_coord &msg) { estimated_pose_ = msg; }; 
-        void stateCallback(const mavros_msgs::State::ConstPtr& msg){ current_state_ = *msg; };
+        void stateCallback(const mavros_msgs::State& msg){ current_state_ = msg; };
 
     
         //transition table

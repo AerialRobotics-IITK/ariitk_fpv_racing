@@ -18,7 +18,7 @@ void PoseEstimationROS::run() {
     if((centre_coord_.x == -1) || (centre_coord_.y == -1)) { return; };
 
     //double dist = centre_coord_.dist;
-    pose_est_.getDistance(0.0 /*put dist here*/);
+    pose_est_.getDistance(centre_coord_.d /*put dist here*/);
     pose_est_.setImgVec(centre_coord_.x, centre_coord_.y);
     pose_est_.CamToQuad();
     pose_est_.setQuaternion(odom_);

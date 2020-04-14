@@ -59,6 +59,7 @@ void Detector::findFrameCentre(cv::Mat& board) {
 
     centre_.first = -1;
     centre_.second = -1;
+    distance_ = 0.0;
 
     std::vector<cv::Point> approx;
     std::vector<std::vector<cv::Point>> contour_to_draw;
@@ -83,7 +84,8 @@ void Detector::findFrameCentre(cv::Mat& board) {
                     centre_.second += corner.y;
                 }
                 centre_.first /= 4; centre_.second /= 4;
-
+                distance_ = sqrt((approx[1].x - approx[0].x)*(approx[1].x - approx[0].x) + (approx[1].y - approx[0].y)*(approx[1].y- approx[0].y));
+                distance_ = 145*4.13/distance_;
                 cv::circle(board, cv::Point(centre_.first, centre_.second), 5, cv::Scalar(0,255,0), -1);
             } else {
                 centre_.first = -1;

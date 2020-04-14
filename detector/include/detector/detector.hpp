@@ -33,6 +33,8 @@ class Detector {
     
         cv::Mat getThresh() { return thresh_img_; };
 
+        double getDistance() { return distance_; };
+
     private :
         std::pair<int, int> centre_;
     
@@ -48,6 +50,7 @@ class Detector {
         int canny_kernel_size_;
 
         double min_contour_area_;
+        double distance_;
 };
 
 }   // namespace ariitk::detector
