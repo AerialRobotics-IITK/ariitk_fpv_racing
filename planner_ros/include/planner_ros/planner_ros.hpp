@@ -18,7 +18,7 @@ class fsmROS {
     private:
         fsm_ machine;
 
-        ariitk::planner::fsm fsm_p;
+        //ariitk::planner::fsm fsm_p;
 
 };
 

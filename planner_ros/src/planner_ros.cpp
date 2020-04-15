@@ -10,13 +10,13 @@ void fsmROS::init(ros::NodeHandle &nh) {
     // ariitk::planner::fsm fsm_;
 
     // fsm_.init(ph);
-    fsm_p.init(nh);
+    machine.init(nh);
     machine.process_event(planner::CmdTakeOff());
 }
 
 void fsmROS::run() {
 
-    std::cout<<"start ho gaya"<<std::endl;
+    // std::cout<<"start ho gaya"<<std::endl;
 
     // //auto state = std::async(std::launch::async, planner::statePublish, ph, &machine);
     // machine.process_event(planner::CmdEstimated());
