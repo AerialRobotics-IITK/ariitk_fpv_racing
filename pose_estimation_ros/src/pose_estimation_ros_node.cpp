@@ -10,7 +10,7 @@ int main(int argc,char** argv) {
 
     pose_est.init(nh);
 
-    ros::Rate loop_rate(1000);
+    ros::Rate loop_rate(10);
 
     while(ros::ok()) {
         pose_est.run();

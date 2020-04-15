@@ -6,7 +6,7 @@ namespace ariitk::pose_estimation_ros {
 void PoseEstimationROS::init(ros::NodeHandle& nh) {
 
     centre_coord_sub_ = nh.subscribe("centre_coord", 10, &PoseEstimationROS::centreCallback, this);
-    odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &PoseEstimationROS::odomCallback, this);
+    odom_sub_ = nh.subscribe("odom", 10, &PoseEstimationROS::odomCallback, this);
 
     ros::NodeHandle nh_private("~");
 
