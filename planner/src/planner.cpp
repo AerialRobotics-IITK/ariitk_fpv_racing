@@ -9,41 +9,27 @@ namespace ariitk::planner {
         centre_sub_ = nh.subscribe("centre_coord", 10, &fsm::centreCallback, this);
         est_pose_sub_ = nh.subscribe("estimated_coord", 10, &fsm::estimatedCallback, this);
         state_sub_ = nh.subscribe("mavros/state", 10, &fsm::stateCallback, this);
-        ROS_WARN("Waiting for state publish");
-        
-        while (ros::ok() && state_sub_.getNumPublishers()==0) {
-            ros::Duration(0.2).sleep();
-        }
-        
-        ROS_WARN_STREAM("Got" << state_sub_.getNumPublishers() << "publishers for " << state_sub_.getTopic());
-        while (ros::ok() && current_state_.connected == false) {
-            ROS_WARN_ONCE ("here1");
-            ROS_WARN_STREAM ((int)current_state_.connected << "in function");
-            ros::spinOnce();
-        } 
-        ROS_INFO_STREAM ((int) current_state_.connected << "global");
+       
+        ROS_WARN("Waiting for state publish"); 
+        while (ros::ok() && state_sub_.getNumPublishers()==0) { ros::Duration(0.2).sleep(); }
 
         arming_client_ = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
         set_mode_client_ = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
         pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
 
-        ROS_WARN("Initialized Planner Node");
+        ROS_INFO("Initialized Planner Node");
     }
 
     void fsm::TakeOff(CmdTakeOff const &cmd) {
         ros::Rate rate(20);
-        ROS_WARN("Taking off!");
-        ROS_WARN_STREAM ("Waiting for connection because " << (int)current_state_.connected << "outside function");        
-        ros::Rate wait_rate(1);
+        ROS_INFO("Taking off!");
 
+        ROS_WARN("Waiting for connection..");
         while(ros::ok() && current_state_.connected == false) {
-            ROS_WARN_ONCE("Here1");
-            ROS_WARN_STREAM ((int) current_state_.connected << "in function");
             ros::spinOnce();
-            wait_rate.sleep();
+            rate.sleep();
         }
-
-        ROS_WARN("Connected to MAVROS..");
+        ROS_INFO("Connected to MAVROS..");
 
         geometry_msgs::PoseStamped pose;
         pose.pose.position.x = 0;
@@ -51,7 +37,6 @@ namespace ariitk::planner {
         pose.pose.position.z = 4;
 
         for(int i = 100; ros::ok() && i > 0; --i){
-            ROS_WARN_ONCE("Here2");
             pose_pub_.publish(pose);
             ros::spinOnce();
             rate.sleep();
@@ -66,7 +51,7 @@ namespace ariitk::planner {
         
         while (!arm_cmd.response.success) {
             arming_client_.call(arm_cmd);
-            std::cout << "Trying to arm" << std::endl;
+            ROS_INFO_ONCE("Arming...");
         }
 
         ros::Time last_request = ros::Time::now();
@@ -88,9 +73,7 @@ namespace ariitk::planner {
                     last_request = ros::Time::now();
                 }
             }
-            // std::cout<<"start ho gaya_4"<<std::endl;
             pose_pub_.publish(pose);
-            // std::cout<<"start ho gaya_5"<<std::endl;
             ros::spinOnce();
             rate.sleep();
         }
