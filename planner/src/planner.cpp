@@ -6,7 +6,6 @@ namespace ariitk::planner {
     bool fsm::verbose =true;
     void fsm::init(ros::NodeHandle& nh) {
         odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odomCallback, this);
-        std::cout << "subscribe hua " <<std::endl;
         centre_sub_ = nh.subscribe("centre_coord", 10, &fsm::centreCallback, this);
         est_pose_sub_ = nh.subscribe("estimated_coord", 10, &fsm::estimatedCallback, this);
         state_sub_ = nh.subscribe("mavros/state", 10, &fsm::stateCallback, this);
@@ -15,29 +14,40 @@ namespace ariitk::planner {
         ros::ServiceClient set_mode_client_ = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
         pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
 
-        std::cout << "init chal raha hai"<<std::endl;
+        ROS_WARN("Initialized Planner Node");
     }
 
     void fsm::TakeOff(CmdTakeOff const &cmd) {
         ros::Rate rate(20);
-        std::cout << "takeoff chal raha hai"<<std::endl;
-        while(!current_state_.connected) {
-            std::cout <<current_state_.header.seq <<std::endl;
+        ROS_WARN("Taking off!");
+        
+        ROS_WARN("Waiting for state Publish!");
+        while(state_sub_.getNumPublishers() <= 0) {
             ros::spinOnce();
             rate.sleep();
         }
-        std::cout<<"start ho gaya_2"<<std::endl;
+
+        ROS_WARN("Waiting for connection..");
+        while(!current_state_.connected) {
+            ROS_WARN_ONCE("Here1");
+            ros::spinOnce();
+            rate.sleep();
+        }
+        ROS_WARN("Connected to MAVROS");
+
         geometry_msgs::PoseStamped pose;
         pose.pose.position.x = 0;
         pose.pose.position.y = 0;
         pose.pose.position.z = 2;
 
         for(int i = 100; ros::ok() && i > 0; --i){
+            ROS_WARN_ONCE("Here2");
             pose_pub_.publish(pose);
             ros::spinOnce();
             rate.sleep();
         }
-        std::cout<<"start ho gaya_3"<<std::endl;
+        ROS_WARN("Published setpoint 100 times!");
+        
         mavros_msgs::SetMode offb_set_mode;
         offb_set_mode.request.custom_mode = "OFFBOARD";
 
