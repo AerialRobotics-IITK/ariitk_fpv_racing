@@ -34,7 +34,7 @@ namespace ariitk::planner {
         geometry_msgs::PoseStamped pose;
         pose.pose.position.x = 0;
         pose.pose.position.y = 0;
-        pose.pose.position.z = 4;
+        pose.pose.position.z = 2;
 
         for(int i = 100; ros::ok() && i > 0; --i){
             pose_pub_.publish(pose);
@@ -57,6 +57,14 @@ namespace ariitk::planner {
         ros::Time last_request = ros::Time::now();
 
         while(ros::ok()){
+
+            if(odom_.pose.pose.position.z >= 1.8) {
+                offb_set_mode.request.custom_mode = "AUTO.LOITER";
+                set_mode_client_.call(offb_set_mode);
+                ROS_INFO_ONCE("AUTO.LOITER TRIGGERED");
+                break;
+            }
+
             if( current_state_.mode != "OFFBOARD" && (ros::Time::now() - last_request > ros::Duration(5.0))) {
                 if( set_mode_client_.call(offb_set_mode)) {
                     if (offb_set_mode.response.mode_sent)
@@ -85,6 +93,14 @@ namespace ariitk::planner {
         bool flag = true;
         while(flag) {
             ros::spinOnce();
+            // mavros_msgs::SetMode offb_set_mode;
+            // offb_set_mode.request.custom_mode = "OFFBOARD";
+            // set_mode_client_.call(offb_set_mode);
+            // geometry_msgs::PoseStamped pose;
+            // pose.pose.position.x = 4;
+            // pose.pose.position.y = 4;
+            // pose.pose.position.z = 4;
+            // pose_pub_.publish(pose);
             double x = odom_.pose.pose.position.x;
             double y = odom_.pose.pose.position.y;
             double z = odom_.pose.pose.position.z;
