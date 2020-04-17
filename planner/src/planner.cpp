@@ -99,7 +99,9 @@ namespace ariitk::planner {
 
     void fsm::DetectionBased(CmdEstimated const &cmd) {
         std::cout << "entering detection based event" << std::endl;
-
+        mavros_msgs::SetMode offb_set_mode;
+        offb_set_mode.request.custom_mode = "OFFBOARD";
+        set_mode_client_.call(offb_set_mode);
         rough_pose_.x = 4.0;
         rough_pose_.y = 4.0;
         rough_pose_.z = 3.0;
