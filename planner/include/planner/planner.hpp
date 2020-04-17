@@ -17,6 +17,7 @@
 #include <detector_msgs/centre.h>
 #include <detector_msgs/global_coord.h>
 #include <detector_msgs/rotation.h>
+#include <std_msgs/String.h>
 
 #define echo(X) std::cout << X << std::endl
 
@@ -45,7 +46,9 @@ struct CmdGlobalT {
 
 class fsm : public msm::front::state_machine_def<fsm>
 {
-    private :
+    typedef msm::active_state_switch_after_transition_action active_state_switch_policy;
+    
+    protected :
 
         nav_msgs::Odometry odom_;
         detector_msgs::centre centre_;
@@ -55,6 +58,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         mavros_msgs::State current_state_;
 
         ros::Publisher pose_pub_;
+        ros::Publisher state_pub_;
 
         ros::Subscriber odom_sub_; 
         ros::Subscriber centre_sub_;
@@ -135,6 +139,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         };
 
         typedef Rest initial_state;
+        typedef msm::back::state_machine<fsm> fsm_;
 
         //fsm(ros::NodeHandle& nh);
         void init(ros::NodeHandle& nh);
@@ -143,6 +148,8 @@ class fsm : public msm::front::state_machine_def<fsm>
         void DetectionBased (CmdEstimated const &cmd);
         void PrevCoord (CmdPass const &cmd);
         void GlobalT (CmdGlobalT const &cmd);
+        void echo_state(fsm_ const &msg);
+        void statePublish(ros::NodeHandle nh, fsm_ *fsm);
 
         //Callback functions
         void odomCallback(const nav_msgs::Odometry &msg) { odom_ = msg; };

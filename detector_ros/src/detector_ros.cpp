@@ -58,7 +58,8 @@ void DetectorROS::run() {
     thresh_pub_.publish(thresh_msg);
     contour_pub_.publish(contour_msg);    
     centre_img_pub_.publish(centre_msg);
-    if(centre_coord_.x != -1 && centre_coord_.y != -1) { centre_pub_.publish(centre_coord_); }
+    centre_pub_.publish(centre_coord_);
+    //if(centre_coord_.x != -1 && centre_coord_.y != -1) { centre_pub_.publish(centre_coord_); }
 }
 
 void DetectorROS::imageCallback(const sensor_msgs::ImageConstPtr& msg) {

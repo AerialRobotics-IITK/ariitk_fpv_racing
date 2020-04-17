@@ -17,7 +17,7 @@ class fsmROS {
 
     private:
         fsm_ machine;
-
+        float transition_time;
         //ariitk::planner::fsm fsm_p;
 
 };

@@ -1,6 +1,13 @@
 #include <planner/planner.hpp>
 
 #define sq(x) (x)*(x)
+#define echo(X) std::cout << X << std::endl
+
+namespace msm = boost::msm;
+// typedef msm::back::state_machine<fsm> fsm_;
+typedef msm::back::state_machine<ariitk::planner::fsm> fsm_;
+static char const *const state_names[] = { "Rest", "Hover", "Before", "After" };
+
 namespace ariitk::planner {
 
     bool fsm::verbose =true;
@@ -15,7 +22,9 @@ namespace ariitk::planner {
 
         arming_client_ = nh.serviceClient<mavros_msgs::CommandBool>("mavros/cmd/arming");
         set_mode_client_ = nh.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
+        
         pose_pub_ = nh.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
+        state_pub_ = nh.advertise<std_msgs::String>("curr_state", 10);
 
         ROS_INFO("Initialized Planner Node");
     }
@@ -89,6 +98,12 @@ namespace ariitk::planner {
     }
 
     void fsm::DetectionBased(CmdEstimated const &cmd) {
+        std::cout << "entering detection based event" << std::endl;
+
+        rough_pose_.x = 4.0;
+        rough_pose_.y = 4.0;
+        rough_pose_.z = 3.0;
+
         ros::Rate looprate(20);
         bool flag = true;
         while(flag) {
@@ -108,6 +123,7 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
+                    std::cout << "dist = 00 " <<std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
@@ -124,6 +140,8 @@ namespace ariitk::planner {
                     continue;
                 }
                 else if (dist >=2 ) {
+
+                    std::cout << "distance is >2" <<std::endl;
                     setpt_.pose.position.x = estimated_pose_.x;
                     setpt_.pose.position.y = estimated_pose_.y;
                     setpt_.pose.position.z = estimated_pose_.z;
@@ -131,6 +149,8 @@ namespace ariitk::planner {
                 }                
             }     
         }
+
+        std::cout << "exitting detection based event" << std::endl;
     }
 
     void fsm::PrevCoord(CmdPass const &cmd) {
@@ -150,9 +170,18 @@ namespace ariitk::planner {
 
         //calculate vector to judge direction so that it doesnt get stuchk in the middle
         //before_pass_vector  - store it   
+
+        std::cout << "we have entered and exitted too from prev coord" << std::endl;
     }
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
+
+        std::cout<< "entering gloablt event" <<std::endl;
+
+
+        rough_pose_.x = 4.0;
+        rough_pose_.y = 4.0;
+        rough_pose_.z = 3.0;
 
         ros::Rate looprate(20);
         bool flag = true;
@@ -165,6 +194,7 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
+                    std::cout << "dist = 00  in globalt " <<std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
@@ -181,6 +211,7 @@ namespace ariitk::planner {
                     continue;
                 }
                 else if (dist >=2 ) {
+                    std::cout << "distance is >2 globalt" <<std::endl;
                     setpt_.pose.position.x = estimated_pose_.x;
                     setpt_.pose.position.y = estimated_pose_.y;
                     setpt_.pose.position.z = estimated_pose_.z;
@@ -198,6 +229,24 @@ namespace ariitk::planner {
 
         //AfterPass to BeforePass is the big task .
         //Frame covers 70% area, then we go to BeforePass state
+
+        std::cout << "exitting gloablt state"<<std::endl;
+
+    }
+
+    //helper function
+    void fsm::echo_state(fsm_ const &msg) {
+        echo("Current state -- " << state_names[msg.current_state()[0]]);
+    }
+    void fsm::statePublish(ros::NodeHandle nh, fsm_ *fsm) {
+        ros::Rate loopRate(10);
+
+        std_msgs::String msg;
+        while(ros::ok()) {
+            msg.data = state_names[fsm->current_state()[0]];
+            state_pub_.publish(msg);
+            loopRate.sleep();
+        }
 
     }
 } // namespace ariitk::planner
