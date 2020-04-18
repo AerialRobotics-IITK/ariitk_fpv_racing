@@ -16,7 +16,10 @@ void PoseEstimationROS::init(ros::NodeHandle& nh) {
 }
 
 void PoseEstimationROS::run() {
-    if((centre_coord_.x == -1) || (centre_coord_.y == -1)) { return; };
+    if((centre_coord_.x == -1) || (centre_coord_.y == -1)) { 
+        
+        glob_coord_pub_.publish(global_coord_);
+        return; };
 
     //double dist = centre_coord_.dist;
     pose_est_.getDistance(centre_coord_.d /*put dist here*/);

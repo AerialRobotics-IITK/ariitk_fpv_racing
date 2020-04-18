@@ -17,7 +17,7 @@ int main(int argc,char** argv) {
 
     while(ros::ok()) {
         //std::cout << "node chal raha hai"<<std::endl;
-        fsm_ros.run();
+        //fsm_ros.run();
         ros::spinOnce();
         loop_rate.sleep();
     }

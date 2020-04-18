@@ -43,7 +43,7 @@ namespace ariitk::planner {
         geometry_msgs::PoseStamped pose;
         pose.pose.position.x = 0;
         pose.pose.position.y = 0;
-        pose.pose.position.z = 2;
+        pose.pose.position.z = 2.5;
 
         for(int i = 100; ros::ok() && i > 0; --i){
             pose_pub_.publish(pose);
@@ -118,6 +118,7 @@ namespace ariitk::planner {
             // pose.pose.position.y = 4;
             // pose.pose.position.z = 4;
             // pose_pub_.publish(pose);
+            double d = centre_.d;
             double x = odom_.pose.pose.position.x;
             double y = odom_.pose.pose.position.y;
             double z = odom_.pose.pose.position.z;
@@ -139,6 +140,7 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
+                    std::cout << "distance is now <2" << std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
@@ -147,6 +149,7 @@ namespace ariitk::planner {
                     setpt_.pose.position.x = estimated_pose_.x;
                     setpt_.pose.position.y = estimated_pose_.y;
                     setpt_.pose.position.z = estimated_pose_.z;
+                    //setpt_.pose.position.z = 2.5;
                     pose_pub_.publish(setpt_);
                 }                
             }     
@@ -172,8 +175,37 @@ namespace ariitk::planner {
 
         //calculate vector to judge direction so that it doesnt get stuchk in the middle
         //before_pass_vector  - store it   
+        std::cout << "we have entered prev coord" << std::endl;
 
-        std::cout << "we have entered and exitted too from prev coord" << std::endl;
+        double x_c = odom_.pose.pose.position.x;
+        double y_c = odom_.pose.pose.position.y;
+        double z_c = odom_.pose.pose.position.z;
+
+        double x_e = estimated_pose_.x;
+        double y_e = estimated_pose_.y;
+        double z_e = estimated_pose_.z;
+        
+       
+        double dist = sqrt( (sq(x_e - x_c)) +  (sq(y_e - y_c)) + (sq(z_e - z_c)));
+        int count =0;
+        while(dist >=0.5) {
+            ros::spinOnce(); 
+            x_c = odom_.pose.pose.position.x;
+            y_c = odom_.pose.pose.position.y;
+            z_c = odom_.pose.pose.position.z;
+            x_e = estimated_pose_.x;
+            y_e = estimated_pose_.y;
+            z_e = estimated_pose_.z;
+            count+=1;
+            setpt_.pose.position.x = estimated_pose_.x;
+            setpt_.pose.position.y = estimated_pose_.y;
+            setpt_.pose.position.z = estimated_pose_.z;
+
+            pose_pub_.publish(setpt_);
+            dist = sqrt( (sq(x_e - x_c)) +  (sq(y_e - y_c)) + (sq(z_e - z_c)));
+        }
+        std::cout << "im in the loop for count" << count << std::endl;
+        std::cout << "we have exitted from prev coord" << std::endl;
     }
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
@@ -210,6 +242,7 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
+                    std::cout << "distance is <2 globalt" <<std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
