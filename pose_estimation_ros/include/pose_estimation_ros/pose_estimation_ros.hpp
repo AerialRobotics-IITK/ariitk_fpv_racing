@@ -23,8 +23,10 @@ class PoseEstimationROS {
 
         detector_msgs::centre centre_coord_;
         detector_msgs::global_coord global_coord_;
+        detector_msgs::global_coord front_coord_;
         nav_msgs::Odometry odom_;
         Eigen::Vector3d glob_coord_;
+        Eigen::Vector3d straight_vec_;
 
         ros::Subscriber centre_coord_sub_;
         ros::Subscriber odom_sub_;
@@ -33,6 +35,7 @@ class PoseEstimationROS {
 
         ros::Publisher glob_coord_pub_;
         ros::Publisher rotation_pub_;
+        ros::Publisher front_coord_pub_;
 
 };
 
