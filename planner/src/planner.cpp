@@ -99,66 +99,86 @@ namespace ariitk::planner {
 
     void fsm::DetectionBased(CmdEstimated const &cmd) {
         std::cout << "entering detection based event" << std::endl;
-        mavros_msgs::SetMode offb_set_mode;
-        offb_set_mode.request.custom_mode = "OFFBOARD";
-        set_mode_client_.call(offb_set_mode);
+        // mavros_msgs::SetMode offb_set_mode;
+        // offb_set_mode.request.custom_mode = "OFFBOARD";
+        // set_mode_client_.call(offb_set_mode);
         rough_pose_.x = 4.0;
         rough_pose_.y = 4.0;
         rough_pose_.z = 3.0;
 
         ros::Rate looprate(20);
         bool flag = true;
-        while(flag) {
-            ros::spinOnce();
-            // mavros_msgs::SetMode offb_set_mode;
-            // offb_set_mode.request.custom_mode = "OFFBOARD";
-            // set_mode_client_.call(offb_set_mode);
-            // geometry_msgs::PoseStamped pose;
-            // pose.pose.position.x = 4;
-            // pose.pose.position.y = 4;
-            // pose.pose.position.z = 4;
-            // pose_pub_.publish(pose);
-            double d = centre_.d;
-            double x = odom_.pose.pose.position.x;
-            double y = odom_.pose.pose.position.y;
-            double z = odom_.pose.pose.position.z;
-            if(centre_.x == -1 || centre_.y ==-1) {
-                double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
-                if(dist < 2) {
-                    flag = false;
-                    std::cout << "dist = 00 " <<std::endl;
-                    continue;
-                }
-                else if (dist >=2 ) {
-                    setpt_.pose.position.x = rough_pose_.x;
-                    setpt_.pose.position.y = rough_pose_.y;
-                    setpt_.pose.position.z = rough_pose_.z;
-                    pose_pub_.publish(setpt_);
-                }     
-            }
-            else {
-                double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
-                if(dist < 2) {
-                    flag = false;
-                    std::cout << "distance is now <2" << std::endl;
-                    continue;
-                }
-                else if (dist >=2 ) {
 
-                    std::cout << "distance is >2" <<std::endl;
-                    setpt_.pose.position.x = estimated_pose_.x;
-                    setpt_.pose.position.y = estimated_pose_.y;
-                    setpt_.pose.position.z = estimated_pose_.z;
-                    //setpt_.pose.position.z = 2.5;
-                    pose_pub_.publish(setpt_);
-                }                
-            }     
+        int c = 1;
+        float sum_x=0, sum_y=0, sum_z=0;
+        while(c>0) {
+
+            std::cout << "summing" << std::endl;
+            ros::spinOnce();
+            sum_x += estimated_pose_.x;
+            sum_y += estimated_pose_.y;
+            sum_z += estimated_pose_.z;
+            c--;
         }
+
+        x_try = sum_x/1;
+        y_try = sum_y/1;
+        z_try = sum_z/1;
+
+        // while(flag) {
+        //     ros::spinOnce();
+        //     // mavros_msgs::SetMode offb_set_mode;
+        //     // offb_set_mode.request.custom_mode = "OFFBOARD";
+        //     // set_mode_client_.call(offb_set_mode);
+        //     // geometry_msgs::PoseStamped pose;
+        //     // pose.pose.position.x = 4;
+        //     // pose.pose.position.y = 4;
+        //     // pose.pose.position.z = 4;
+        //     // pose_pub_.publish(pose);
+        //     double d = centre_.d;
+        //     double x = odom_.pose.pose.position.x;
+        //     double y = odom_.pose.pose.position.y;
+        //     double z = odom_.pose.pose.position.z;
+        //     if(centre_.x == -1 || centre_.y ==-1) {
+        //         double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
+        //         if(dist < 2) {
+        //             flag = false;
+        //             std::cout << "dist = 00 " <<std::endl;
+        //             continue;
+        //         }
+        //         else if (dist >=2 ) {
+        //             setpt_.pose.position.x = rough_pose_.x;
+        //             setpt_.pose.position.y = rough_pose_.y;
+        //             setpt_.pose.position.z = rough_pose_.z;
+        //             pose_pub_.publish(setpt_);
+        //         }     transition_time
+        //     }
+        //     else {
+        //         double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
+        //         if(dist < 2) {
+        //             flag = false;
+        //             std::cout << "distance is now <2" << std::endl;
+        //             continue;
+        //         }
+        //         else if (dist >=2 ) {
+
+        //             std::cout << "distance is >2" <<std::endl;
+        //             setpt_.pose.position.x = estimated_pose_.x;
+        //             setpt_.pose.position.y = estimated_pose_.y;
+        //             setpt_.pose.position.z = estimated_pose_.z;
+        //             //setpt_.pose.position.z = 2.5;
+        //             pose_pub_.publish(setpt_);
+        //         }                
+        //     }     
+        // }
 
         std::cout << "exitting detection based event" << std::endl;
     }
 
     void fsm::PrevCoord(CmdPass const &cmd) {
+        mavros_msgs::SetMode offb_set_mode;
+        offb_set_mode.request.custom_mode = "OFFBOARD";
+        set_mode_client_.call(offb_set_mode);
         //frame_msg = a,b,c
         //odom_msg = x,y,z
 
@@ -166,7 +186,7 @@ namespace ariitk::planner {
         //dir_vec = (scalar)*(dir_vec/|dir_vec|);
 
 
-        // geometry_msgs::PoseStamped calc_coord; 
+        // geometry_msgs::PoseStamped calc_coord; [ INFO] [1587244974.432107617, 2526.140000000]: F
         // calc_coord.pose.position.x = x + dir_vec;
         // calc_coord.pose.position.y = y + dir_vec;
         // calc_coord.pose.position.z = z + dir_vec;
@@ -175,85 +195,152 @@ namespace ariitk::planner {
 
         //calculate vector to judge direction so that it doesnt get stuchk in the middle
         //before_pass_vector  - store it   
+        
         std::cout << "we have entered prev coord" << std::endl;
+        //trying somehting
 
         double x_c = odom_.pose.pose.position.x;
         double y_c = odom_.pose.pose.position.y;
         double z_c = odom_.pose.pose.position.z;
 
-        double x_e = estimated_pose_.x;
-        double y_e = estimated_pose_.y;
-        double z_e = estimated_pose_.z;
-        
-       
-        double dist = sqrt( (sq(x_e - x_c)) +  (sq(y_e - y_c)) + (sq(z_e - z_c)));
+        double x_d = x_c;
+        double y_d = y_c;
+        double z_d = z_c;
+
+
+        double dist = sqrt( (sq(x_try - x_c)) +  (sq(y_try - y_c)) + (sq(z_try - z_c)));
         int count =0;
-        while(dist >=0.5) {
+        while(dist >=3) {
             ros::spinOnce(); 
             x_c = odom_.pose.pose.position.x;
             y_c = odom_.pose.pose.position.y;
             z_c = odom_.pose.pose.position.z;
-            x_e = estimated_pose_.x;
-            y_e = estimated_pose_.y;
-            z_e = estimated_pose_.z;
             count+=1;
-            setpt_.pose.position.x = estimated_pose_.x;
-            setpt_.pose.position.y = estimated_pose_.y;
-            setpt_.pose.position.z = estimated_pose_.z;
-
+            setpt_.pose.position.x = x_try ;
+            setpt_.pose.position.y = y_try ;
+            setpt_.pose.position.z = z_try ;
+            std::cout << dist << "is the distance" << std::endl;
             pose_pub_.publish(setpt_);
-            dist = sqrt( (sq(x_e - x_c)) +  (sq(y_e - y_c)) + (sq(z_e - z_c)));
+            dist = sqrt( (sq(x_try - x_c)) +  (sq(y_try - y_c)) + (sq(z_try - z_c)));
         }
-        std::cout << "im in the loop for count" << count << std::endl;
-        std::cout << "we have exitted from prev coord" << std::endl;
+        
+        // mavros_msgs::SetMode offb_set_mode;
+        // offb_set_mode.request.custom_mode = "AUTO.LOITER";
+        // set_mode_client_.call(offb_set_mode);
+        // ROS_INFO_ONCE("AUTO.LOITER TRIGGERED");
+
+        // double x_c = odom_.pose.pose.position.x;
+        // double y_c = odom_.pose.pose.position.y;
+        // double z_c = odom_.pose.pose.position.z;
+
+        // double x_e = estimated_pose_.x;
+        // double y_e = estimated_pose_.y;
+        // double z_e = estimated_pose_.z;
+        
+       
+        // double dist = sqrt( (sq(x_e - x_c)) +  (sq(y_e - y_c)) + (sq(z_e - z_c)));
+        // int count =0;
+        // while(dist >=0.5) {
+        //     ros::spinOnce(); 
+        //     x_c = odom_.pose.pose.position.x;
+        //     y_c = odom_.pose.pose.position.y;
+        //     z_c = odom_.pose.pose.position.z;
+        //     x_e = estimated_pose_.x;
+        //     y_e = estimated_pose_.y;
+        //     z_e = estimated_pose_.z;
+        //     count+=1;
+        //     setpt_.pose.position.x = estimated_pose_.x;
+        //     setpt_.pose.position.y = estimated_pose_.y;
+        //     setpt_.pose.position.z = estimated_pose_.z;
+
+        //     pose_pub_.publish(setpt_);
+        //     dist = sqrt( (sq(x_e - x_c)) +  (sq(y_e - y_c)) + (sq(z_e - z_c)));
+        // }
+        // std::cout << "im in the loop for count" << count << std::endl;
+         std::cout << "we have exitted from prev coord" << std::endl;
     }
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
 
         std::cout<< "entering gloablt event" <<std::endl;
 
+        //trying something
 
-        rough_pose_.x = 4.0;
-        rough_pose_.y = 4.0;
+        rough_pose_.x = 10.0;
+        rough_pose_.y = 3.0;
         rough_pose_.z = 3.0;
 
-        ros::Rate looprate(20);
-        bool flag = true;
-        while(flag) {
+        while(odom_.pose.pose.position.x <9.5) {
             ros::spinOnce();
-            double x = odom_.pose.pose.position.x;
-            double y = odom_.pose.pose.position.y;
-            double z = odom_.pose.pose.position.z;
-            if(centre_.x == -1 || centre_.y ==-1) {
-                double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
-                if(dist < 2) {
-                    flag = false;
-                    std::cout << "dist = 00  in globalt " <<std::endl;
-                    continue;
-                }
-                else if (dist >=2 ) {
-                    setpt_.pose.position.x = rough_pose_.x;
-                    setpt_.pose.position.y = rough_pose_.y;
-                    setpt_.pose.position.z = rough_pose_.z;
-                    pose_pub_.publish(setpt_);
-                }     
-            }
-            else {
-                double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
-                if(dist < 2) {
-                    flag = false;
-                    std::cout << "distance is <2 globalt" <<std::endl;
-                    continue;
-                }
-                else if (dist >=2 ) {
-                    std::cout << "distance is >2 globalt" <<std::endl;
-                    setpt_.pose.position.x = estimated_pose_.x;
-                    setpt_.pose.position.y = estimated_pose_.y;
-                    setpt_.pose.position.z = estimated_pose_.z;
-                    pose_pub_.publish(setpt_);
-                }                
-            }     
+            std::cout << "publishing" <<std::endl;
+            setpt_.pose.position.x = rough_pose_.x;
+            setpt_.pose.position.y = rough_pose_.y;
+            setpt_.pose.position.z = rough_pose_.z;
+            pose_pub_.publish(setpt_);
+        }        
+
+         mavros_msgs::SetMode offb_set_mode;
+        offb_set_mode.request.custom_mode = "AUTO.LOITER";
+        set_mode_client_.call(offb_set_mode);
+        ROS_INFO_ONCE("AUTO.LOITER TRIGGERED");
+
+        // ros::Rate looprate(20);
+        // bool flag = true;
+        // while(flag) {
+        //     ros::spinOnce();
+        //     double x = odom_.pose.pose.position.x;
+        //     double y = odom_.pose.pose.position.y;
+        //     double z = odom_.pose.pose.position.z;
+        //     if(centre_.x == -1 || centre_.y ==-1) {
+        //         double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)) + (sq(rough_pose_.z - z)));
+        //         if(dist < 2) {
+        //             flag = false;
+        //             std::cout << "dist = 00  in globalt " <<std::endl;
+        //             continue;
+        //         }
+        //         else if (dist >=2 ) {
+        //             setpt_.pose.position.x = rough_pose_.x;
+        //             setpt_.pose.position.y = rough_pose_.y;
+        //             setpt_.pose.position.z = rough_pose_.z;
+        //             pose_pub_.publish(setpt_);
+        //         }     
+        //     }
+        //     else {
+        //         double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
+        //         if(dist < 2) {
+        //             flag = false;
+        //             std::cout << "distance is <2 globalt" <<std::endl;
+        //             continue;
+        //         }
+        //         else if (dist >=2 ) {
+        //             std::cout << "distance is >2 globalt" <<std::endl;
+        //             setpt_.pose.position.x = estimated_pose_.x;
+        //             setpt_.pose.position.y = estimated_pose_.y;
+        //             setpt_.pose.position.z = estimated_pose_.z;
+        //             pose_pub_.publish(setpt_);
+        //         }                
+        //     }     
+        // }
+
+
+
+        int c = 1;
+        float sum_x=0, sum_y=0, sum_z=0;
+        while(c>0) {
+
+            std::cout << "summing" << std::endl;
+            ros::spinOnce();
+            sum_x += estimated_pose_.x;
+            sum_y += estimated_pose_.y;
+            sum_z += estimated_pose_.z;
+            c--;
         }
+
+        x_try = sum_x/1;
+        y_try = sum_y/1;
+        z_try = sum_z/1;
+
+        
         //Rotate drone according to next frame
 
         //call subscriber to get odom_

@@ -68,6 +68,8 @@ class fsm : public msm::front::state_machine_def<fsm>
         ros::ServiceClient arming_client_;
         ros::ServiceClient set_mode_client_;
 
+        float x_try, y_try, z_try;
+
     public:
         static bool verbose;
         template<class Event,class FSM>

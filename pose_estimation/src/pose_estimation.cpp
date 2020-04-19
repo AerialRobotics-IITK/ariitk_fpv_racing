@@ -44,7 +44,7 @@ PoseEstimation::PoseEstimation() {
 
     t_cam_(0)=0.0;
     t_cam_(1)=0.0;
-    t_cam_(2)=0.0;
+    t_cam_(2)=-0.6;
     
 }
 void PoseEstimation::getDistance(float dist=0.0) {

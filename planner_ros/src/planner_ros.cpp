@@ -14,14 +14,16 @@ void fsmROS::init(ros::NodeHandle &nh) {
     
     //auto state = std::async(std::launch::async, planner::fsm::statePublish, ph, &machine);
     machine.process_event(planner::CmdTakeOff());
-    //machine.process_event(planner::CmdEstimated());
+    machine.process_event(planner::CmdEstimated());
 }
 
 void fsmROS::run() {
 
     // std::cout<<"start ho gaya"<<std::endl;
-    ros::Rate transitRate(1/transition_time);
+    ros::Rate transitRate(50);
 
+    //transitRate.sleep();
+    
     transitRate.sleep();  //have to write in param file
     machine.process_event(planner::CmdPass());
 
