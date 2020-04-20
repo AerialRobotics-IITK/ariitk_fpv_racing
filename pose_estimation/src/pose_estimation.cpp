@@ -27,15 +27,15 @@ PoseEstimation::PoseEstimation() {
     // cam_matrix_(2,1) = 0;
     // cam_matrix_(2,2) = 1;
     
-    cam_to_quad_(0,0) = 0;
+    cam_to_quad_(0,0) = 1;
     cam_to_quad_(0,1) = 0;
-    cam_to_quad_(0,2) = 1;
-    cam_to_quad_(1,0) = 1;
-    cam_to_quad_(1,1) = 0;
+    cam_to_quad_(0,2) = 0;
+    cam_to_quad_(1,0) = 0;
+    cam_to_quad_(1,1) = 1;
     cam_to_quad_(1,2) = 0;
     cam_to_quad_(2,0) = 0;
-    cam_to_quad_(2,1) = -1;
-    cam_to_quad_(2,2) = 0;
+    cam_to_quad_(2,1) = 0;
+    cam_to_quad_(2,2) = 1;
 
 
     img_vec_(0)=0;
@@ -44,7 +44,7 @@ PoseEstimation::PoseEstimation() {
 
     t_cam_(0)=0.0;
     t_cam_(1)=0.0;
-    t_cam_(2)=-0.6;
+    t_cam_(2)=0.02;
     
 }
 void PoseEstimation::getDistance(float dist=0.0) {
@@ -58,7 +58,7 @@ void PoseEstimation::getDistance(float dist=0.0) {
     }
 }
 
-void PoseEstimation::setImgVec(int x, int y) {
+void PoseEstimation::setImgVec(float x, float y) {
     img_vec_(0) = x;
     img_vec_(1) = y;
 }
@@ -78,10 +78,11 @@ void PoseEstimation::CamToQuad() {
 
 void PoseEstimation::QuadToGlob(nav_msgs::Odometry odom) {
     glob_coord_ = quad_to_glob_*quad_coord_;
+    //std::cout << odom.pose.pose.position.x << std::endl;
     glob_coord_(0) = glob_coord_(0) + odom.pose.pose.position.x;
     glob_coord_(1) = glob_coord_(1) + odom.pose.pose.position.y;
     glob_coord_(2) = glob_coord_(2) + odom.pose.pose.position.z;
-    glob_coord_(1) = -(glob_coord_(1)+glob_coord_(2));
+    //glob_coord_(1) = -(glob_coord_(1)+glob_coord_(2));
     
         
 }

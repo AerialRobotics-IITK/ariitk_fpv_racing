@@ -54,6 +54,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         detector_msgs::centre centre_;
         detector_msgs::global_coord estimated_pose_;
         detector_msgs::global_coord rough_pose_;
+        detector_msgs::global_coord front_pose_;
         geometry_msgs::PoseStamped setpt_;
         mavros_msgs::State current_state_;
 
@@ -64,6 +65,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         ros::Subscriber centre_sub_;
         ros::Subscriber est_pose_sub_;
         ros::Subscriber state_sub_;
+        ros::Subscriber front_sub_;
 
         ros::ServiceClient arming_client_;
         ros::ServiceClient set_mode_client_;
@@ -154,6 +156,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         void statePublish(ros::NodeHandle nh, fsm_ *fsm);
 
         //Callback functions
+        void frontCallback(const detector_msgs::global_coord &msg) { front_pose_ = msg; };
         void odomCallback(const nav_msgs::Odometry &msg) { odom_ = msg; };
         void centreCallback(const detector_msgs::centre &msg) { centre_ = msg; };
         void estimatedCallback(const detector_msgs::global_coord &msg) { estimated_pose_ = msg; }; 

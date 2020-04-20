@@ -14,7 +14,7 @@ class PoseEstimation {
         void getDistance(float dist);
         void setCamToQaud();
         void setCamMatrix();
-        void setImgVec(int x, int y);
+        void setImgVec(float x, float y);
         void setQuaternion(nav_msgs::Odometry odom);
         void CamToQuad();
         void QuadToGlob(nav_msgs::Odometry odom);

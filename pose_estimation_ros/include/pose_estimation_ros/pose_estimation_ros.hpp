@@ -16,10 +16,11 @@ class PoseEstimationROS {
         ~PoseEstimationROS() {};
         void init(ros::NodeHandle& nh);
         void run();
-
-    private:
         void centreCallback(const detector_msgs::centre& msg);
         void odomCallback(const nav_msgs::Odometry& msg);
+        void odomdisplay() {std::cout << "x: "<< odom_.pose.pose.position.x << "  y: " << odom_.pose.pose.position.y << "  z: " << odom_.pose.pose.position.z <<std::endl;}
+
+    private:
 
         detector_msgs::centre centre_coord_;
         detector_msgs::global_coord global_coord_;

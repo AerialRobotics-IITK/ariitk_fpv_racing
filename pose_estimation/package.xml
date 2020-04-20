@@ -15,5 +15,6 @@
   <depend>tf</depend>
   <depend>tf_conversions</depend>
   <depend>mavros_msgs</depend>
+  <depend>nav_msgs</depend>
 
 </package>

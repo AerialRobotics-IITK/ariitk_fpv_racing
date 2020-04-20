@@ -16,7 +16,8 @@ namespace ariitk::planner {
         centre_sub_ = nh.subscribe("centre_coord", 10, &fsm::centreCallback, this);
         est_pose_sub_ = nh.subscribe("estimated_coord", 10, &fsm::estimatedCallback, this);
         state_sub_ = nh.subscribe("mavros/state", 10, &fsm::stateCallback, this);
-       
+        front_sub_ = nh.subscribe("front_coord", 10, &fsm::frontCallback, this);
+
         ROS_WARN("Waiting for state publish"); 
         while (ros::ok() && state_sub_.getNumPublishers()==0) { ros::Duration(0.2).sleep(); }
 
@@ -112,13 +113,20 @@ namespace ariitk::planner {
         int c = 1;
         float sum_x=0, sum_y=0, sum_z=0;
         while(c>0) {
-
-            std::cout << "summing" << std::endl;
+            
             ros::spinOnce();
-            sum_x += estimated_pose_.x;
-            sum_y += estimated_pose_.y;
-            sum_z += estimated_pose_.z;
-            c--;
+            
+            std::cout << "summing" << std::endl;
+            if(!(centre_.x == -1 || centre_.y ==-1)) {
+                sum_x += estimated_pose_.x ;
+                sum_y += estimated_pose_.y ;
+                sum_z += estimated_pose_.z ;
+                c--;
+            }
+            else {
+                std::cout << "i'm fucked, help!" << std::endl;
+            }
+
         }
 
         x_try = sum_x/1;
@@ -203,14 +211,9 @@ namespace ariitk::planner {
         double y_c = odom_.pose.pose.position.y;
         double z_c = odom_.pose.pose.position.z;
 
-        double x_d = x_c;
-        double y_d = y_c;
-        double z_d = z_c;
-
-
         double dist = sqrt( (sq(x_try - x_c)) +  (sq(y_try - y_c)) + (sq(z_try - z_c)));
         int count =0;
-        while(dist >=3) {
+        while(dist >=4) {
             ros::spinOnce(); 
             x_c = odom_.pose.pose.position.x;
             y_c = odom_.pose.pose.position.y;
@@ -219,7 +222,7 @@ namespace ariitk::planner {
             setpt_.pose.position.x = x_try ;
             setpt_.pose.position.y = y_try ;
             setpt_.pose.position.z = z_try ;
-            std::cout << dist << "is the distance" << std::endl;
+            //std::cout << dist << "is the distance" << std::endl;
             pose_pub_.publish(setpt_);
             dist = sqrt( (sq(x_try - x_c)) +  (sq(y_try - y_c)) + (sq(z_try - z_c)));
         }
@@ -266,18 +269,40 @@ namespace ariitk::planner {
 
         //trying something
 
-        rough_pose_.x = 10.0;
-        rough_pose_.y = 3.0;
-        rough_pose_.z = 3.0;
+        // rough_pose_.x = 10.0;
+        // rough_pose_.y = 3.0;
+        // rough_pose_.z = 3.0;
 
-        while(odom_.pose.pose.position.x <9.5) {
+        // while(odom_.pose.pose.position.x <9.5) {
+        //     ros::spinOnce();
+        //     std::cout << "publishing" <<std::endl;
+        //     setpt_.pose.position.x = rough_pose_.x;
+        //     setpt_.pose.position.y = rough_pose_.y;
+        //     setpt_.pose.position.z = rough_pose_.z;
+        //     pose_pub_.publish(setpt_);
+        // }        
+
+        //trying something again
+        //ros::spinOnce();
+        ros::Rate looprate(20);
+        double x = odom_.pose.pose.position.x;
+        double y = odom_.pose.pose.position.y;
+        double z = odom_.pose.pose.position.z;  
+
+        double dist = sqrt( (sq(front_pose_.x -x )) +  (sq(front_pose_.y -y)) + (sq(front_pose_.z -z)) );
+
+        while(dist >1 ) {
             ros::spinOnce();
-            std::cout << "publishing" <<std::endl;
-            setpt_.pose.position.x = rough_pose_.x;
-            setpt_.pose.position.y = rough_pose_.y;
-            setpt_.pose.position.z = rough_pose_.z;
+            looprate.sleep();
+            setpt_.pose.position.x = front_pose_.x ;
+            setpt_.pose.position.y = front_pose_.y ;
+            setpt_.pose.position.z = odom_.pose.pose.position.z;
             pose_pub_.publish(setpt_);
-        }        
+            x = odom_.pose.pose.position.x;
+            y = odom_.pose.pose.position.y;
+            z = odom_.pose.pose.position.z;
+            dist = sqrt( (sq(front_pose_.x -x )) +  (sq(front_pose_.y -y)) + (sq(front_pose_.z -z))) ;
+        }
 
          mavros_msgs::SetMode offb_set_mode;
         offb_set_mode.request.custom_mode = "AUTO.LOITER";
