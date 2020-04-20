@@ -27,15 +27,15 @@ PoseEstimation::PoseEstimation() {
     // cam_matrix_(2,1) = 0;
     // cam_matrix_(2,2) = 1;
     
-    cam_to_quad_(0,0) = 1;
+    cam_to_quad_(0,0) = 0;
     cam_to_quad_(0,1) = 0;
-    cam_to_quad_(0,2) = 0;
-    cam_to_quad_(1,0) = 0;
-    cam_to_quad_(1,1) = 1;
+    cam_to_quad_(0,2) = 1;
+    cam_to_quad_(1,0) = -1;
+    cam_to_quad_(1,1) = 0;
     cam_to_quad_(1,2) = 0;
     cam_to_quad_(2,0) = 0;
-    cam_to_quad_(2,1) = 0;
-    cam_to_quad_(2,2) = 1;
+    cam_to_quad_(2,1) = -1;
+    cam_to_quad_(2,2) = 0;
 
 
     img_vec_(0)=0;
@@ -71,17 +71,18 @@ void PoseEstimation::setQuaternion(nav_msgs::Odometry odom) {
 }
 
 void PoseEstimation::CamToQuad() {
+    std::cout << scale_up_(0,0) <<std::endl;
     Eigen::Matrix3d inv_cam_matrix = cam_matrix_.inverse();
     quad_coord_ = cam_to_quad_*scale_up_*inv_cam_matrix*img_vec_ + t_cam_;
     //std::cout << quad_coord_ <<std::endl;
     }
 
 void PoseEstimation::QuadToGlob(nav_msgs::Odometry odom) {
-    glob_coord_ = quad_to_glob_*quad_coord_;
+    glob_coord_ = /*quad_to_glob_**/quad_coord_;
     //std::cout << odom.pose.pose.position.x << std::endl;
-    glob_coord_(0) = glob_coord_(0) + odom.pose.pose.position.x;
-    glob_coord_(1) = glob_coord_(1) + odom.pose.pose.position.y;
-    glob_coord_(2) = glob_coord_(2) + odom.pose.pose.position.z;
+    // glob_coord_(0) = glob_coord_(0) + odom.pose.pose.position.x;
+    // glob_coord_(1) = glob_coord_(1) + odom.pose.pose.position.y;
+    // glob_coord_(2) = glob_coord_(2) + odom.pose.pose.position.z;
     //glob_coord_(1) = -(glob_coord_(1)+glob_coord_(2));
     
         
