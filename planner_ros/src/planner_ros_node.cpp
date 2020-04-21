@@ -19,7 +19,7 @@ int main(int argc,char** argv) {
         //std::cout << "node chal raha hai"<<std::endl;
         ros::spinOnce();
         loop_rate.sleep();
-        //fsm_ros.run();
+        fsm_ros.run();
     }
 
     return 0;

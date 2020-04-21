@@ -110,7 +110,7 @@ namespace ariitk::planner {
         ros::Rate looprate(20);
         bool flag = true;
 
-        int c = 1;
+        int c = 5;
         float sum_x=0, sum_y=0, sum_z=0;
         while(c>0) {
             
@@ -129,9 +129,9 @@ namespace ariitk::planner {
 
         }
 
-        x_try = sum_x/1;
-        y_try = sum_y/1;
-        z_try = sum_z/1;
+        x_try = sum_x/5;
+        y_try = sum_y/5;
+        z_try = sum_z/5;
 
         // while(flag) {
         //     ros::spinOnce();
@@ -213,7 +213,7 @@ namespace ariitk::planner {
 
         double dist = sqrt( (sq(x_try - x_c)) +  (sq(y_try - y_c)) + (sq(z_try - z_c)));
         int count =0;
-        while(dist >=4) {
+        while(dist >=2) {
             ros::spinOnce(); 
             x_c = odom_.pose.pose.position.x;
             y_c = odom_.pose.pose.position.y;
@@ -289,9 +289,9 @@ namespace ariitk::planner {
         double y = odom_.pose.pose.position.y;
         double z = odom_.pose.pose.position.z;  
 
-        double dist = sqrt( (sq(front_pose_.x -x )) +  (sq(front_pose_.y -y)) + (sq(front_pose_.z -z)) );
+        double dist = sqrt( (sq(x_try -x )) +  (sq(y_try -y)) + (sq(z_try -z)) );
 
-        while(dist >1 ) {
+        while(dist <2 ) {
             ros::spinOnce();
             looprate.sleep();
             setpt_.pose.position.x = front_pose_.x ;
@@ -301,7 +301,8 @@ namespace ariitk::planner {
             x = odom_.pose.pose.position.x;
             y = odom_.pose.pose.position.y;
             z = odom_.pose.pose.position.z;
-            dist = sqrt( (sq(front_pose_.x -x )) +  (sq(front_pose_.y -y)) + (sq(front_pose_.z -z))) ;
+            dist = sqrt( (sq(x_try -x )) +  (sq(y_try -y)) + (sq(z_try -z))) ;
+            //std::cout << "distance: " << dist << std::endl;
         }
 
          mavros_msgs::SetMode offb_set_mode;

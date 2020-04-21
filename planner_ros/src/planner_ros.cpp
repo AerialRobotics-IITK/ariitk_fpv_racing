@@ -14,7 +14,7 @@ void fsmROS::init(ros::NodeHandle &nh) {
     
     //auto state = std::async(std::launch::async, planner::fsm::statePublish, ph, &machine);
     machine.process_event(planner::CmdTakeOff());
-    //machine.process_event(planner::CmdEstimated());
+    machine.process_event(planner::CmdEstimated());
 }
 
 void fsmROS::run() {
