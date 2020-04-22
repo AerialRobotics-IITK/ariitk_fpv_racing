@@ -28,7 +28,7 @@ void fsmROS::run() {
     machine.process_event(planner::CmdPass());
 
     transitRate.sleep();
-    machine.process_event(planner::CmdGlobalT());
+    // machine.process_event(planner::CmdGlobalT());
     
 }
 

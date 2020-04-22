@@ -11,13 +11,15 @@
 #include <ros/ros.h>
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/State.h>
-#include <mavros_msgs/SetMode.h> //For TakeOff
+#include <mavros_msgs/SetMode.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <detector_msgs/centre.h>
 #include <detector_msgs/global_coord.h>
 #include <detector_msgs/rotation.h>
 #include <std_msgs/String.h>
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
 
 #define echo(X) std::cout << X << std::endl
 
@@ -57,6 +59,9 @@ class fsm : public msm::front::state_machine_def<fsm>
         detector_msgs::global_coord front_pose_;
         geometry_msgs::PoseStamped setpt_;
         mavros_msgs::State current_state_;
+        Eigen::Vector3d frame_vec_;
+        Eigen::Vector3d drone_vec_;
+        Eigen::Vector3d traj_vec_;
 
         ros::Publisher pose_pub_;
         ros::Publisher state_pub_;
