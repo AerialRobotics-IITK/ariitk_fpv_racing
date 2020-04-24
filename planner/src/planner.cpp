@@ -106,38 +106,66 @@ namespace ariitk::planner {
         offb_set_mode.request.custom_mode = "OFFBOARD";
         set_mode_client_.call(offb_set_mode);
 
-        rough_pose_.x = 5.5;
-        rough_pose_.y = 1.5;
+        rough_pose_.x = 18;
+        rough_pose_.y = 3;
         rough_pose_.z = 2.7;
 
         ros::Rate looprate(20);
         bool flag = true;
+        float sum_x=0, sum_y=0, sum_z=0;
+        int k = 1;
 
-        int c = 5 , num = 1;
-            float sum_x=0, sum_y=0, sum_z=0;
-            while(c>0 && !(centre_.x == -1 || centre_.y ==-1)) {
+        // int c = 5 , num = 1;
+        //     float sum_x=0, sum_y=0, sum_z=0;
+        //     while(c>0 && !(centre_.x == -1 || centre_.y ==-1)) {
             
-                ros::spinOnce();
+        //         ros::spinOnce();
             
-                std::cout << "summing" << std::endl;
-                if(!(centre_.x == -1 || centre_.y ==-1)) {
-                    sum_x += estimated_pose_.x ;
-                    sum_y += estimated_pose_.y ;
-                    sum_z += estimated_pose_.z ;
-                    num ++;
-                    c--;
-                }
-                else {
-                    std::cout << "i'm fucked, help!" << std::endl;
-                }
-            }
-            if(num>1) num--;
-            frame_vec_(0) = sum_x/5;
-            frame_vec_(1) = sum_y/5;
-            frame_vec_(2) = sum_z/5;
+        //         std::cout << "summing" << std::endl;
+        //         if(!(centre_.x == -1 || centre_.y ==-1)) {
+        //             sum_x += estimated_pose_.x ;
+        //             sum_y += estimated_pose_.y ;
+        //             sum_z += estimated_pose_.z ;
+        //             num ++;
+        //             c--;
+        //         }
+        //         else {
+        //             std::cout << "i'm fucked, help!" << std::endl;
+        //         }
+        //     }
+        //     if(num>1) num--;
+        //     frame_vec_(0) = sum_x/5;
+        //     frame_vec_(1) = sum_y/5;
+        //     frame_vec_(2) = sum_z/5;
 
         while(flag) {
             ros::spinOnce();
+
+            if(!(centre_.x == -1 || centre_.y ==-1) && k == 1){
+                int c = 5;
+                while(c>0) {
+            
+                    ros::spinOnce();
+            
+                    std::cout << "summing" << std::endl;
+                    if(!(centre_.x == -1 || centre_.y ==-1)) {
+                        sum_x += estimated_pose_.x ;
+                        sum_y += estimated_pose_.y ;
+                        sum_z += estimated_pose_.z ;
+                        c--;
+                    }
+                    else {
+                        std::cout << "globalt i'm fucked, help!" << std::endl;
+                    }
+                }
+
+                frame_vec_(0) = sum_x/5;
+                frame_vec_(1) = sum_y/5;
+                frame_vec_(2) = sum_z/5;
+                std::cout << frame_vec_(0) << " " << frame_vec_(1) << " " << frame_vec_(2) << std::endl;
+                k--;
+
+            }
 
             // int c = 0 , num = 1;
             // float sum_x=0, sum_y=0, sum_z=0;
@@ -172,7 +200,7 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)));
                 if(dist < 2) {
                     flag = false;
-                    std::cout << "dist < 2 " <<std::endl;
+                    // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
@@ -183,16 +211,16 @@ namespace ariitk::planner {
                 }
             }
             else {
-                std::cout<<"detected"<<std::endl;
+                // std::cout<<"detected"<<std::endl;
                 double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
-                    std::cout << "distance is now <2" << std::endl;
+                    // std::cout << "distance is now <2" << std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
 
-                    std::cout << "distance is >2" <<std::endl;
+                    // std::cout << "distance is >2" <<std::endl;
                     setpt_.pose.position.x = frame_vec_(0);
                     setpt_.pose.position.y = frame_vec_(1);
                     setpt_.pose.position.z = frame_vec_(2);
@@ -212,27 +240,27 @@ namespace ariitk::planner {
         offb_set_mode.request.custom_mode = "OFFBOARD";
         set_mode_client_.call(offb_set_mode);  
 
-        drone_vec_(0) = odom_.pose.pose.position.x;
-        drone_vec_(1) = odom_.pose.pose.position.y;
-        drone_vec_(2) = odom_.pose.pose.position.z;
 
         ros::Rate lprt(30);                          //THIS LOOP IS ONLY FOR STALLING
         for(int i = 0 ; i < 20 ; i++){               //MAY BE REMOVED LATER
-            setpt_.pose.position.x = drone_vec_(0);
-            setpt_.pose.position.y = drone_vec_(1);
-            setpt_.pose.position.z = drone_vec_(2);
+            setpt_.pose.position.x = odom_.pose.pose.position.x;
+            setpt_.pose.position.y = odom_.pose.pose.position.y;
+            setpt_.pose.position.z = odom_.pose.pose.position.z;
             pose_pub_.publish(setpt_);
 
             lprt.sleep();
         }
 
+        drone_vec_(0) = odom_.pose.pose.position.x;
+        drone_vec_(1) = odom_.pose.pose.position.y;
+        drone_vec_(2) = odom_.pose.pose.position.z;
         double dist = sqrt( (sq(frame_vec_(0) - drone_vec_(0))) +  (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
 
-        traj_vec_(0) = ((frame_vec_(0)-drone_vec_(0))/dist)*5;
-        traj_vec_(1) = ((frame_vec_(1)-drone_vec_(1))/dist)*5;
-        traj_vec_(2) = (drone_vec_(2));
+        traj_vec_(0) = ((frame_vec_(0)-drone_vec_(0))/dist)*4;
+        traj_vec_(1) = ((frame_vec_(1)-drone_vec_(1))/dist)*4;
+        traj_vec_(2) = ((frame_vec_(2)-drone_vec_(2))/dist)*4;
         
-        while(dist < 2.5) {
+        while(dist < 2.0) {
             ros::spinOnce(); 
             drone_vec_(0) = odom_.pose.pose.position.x;
             drone_vec_(1) = odom_.pose.pose.position.y;
@@ -240,10 +268,19 @@ namespace ariitk::planner {
 
             setpt_.pose.position.x = drone_vec_(0) + traj_vec_(0) ;
             setpt_.pose.position.y = drone_vec_(1) + traj_vec_(1) ;
-            setpt_.pose.position.z = traj_vec_(2) ;
-            std::cout << "prev coord publishing" << std::endl;
+            setpt_.pose.position.z = drone_vec_(2) + traj_vec_(2) ;
+            // std::cout << "prev coord publishing" << std::endl;
             pose_pub_.publish(setpt_);
             dist = sqrt( (sq(frame_vec_(0) - drone_vec_(0))) +  (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
+        }
+
+        for(int i = 0 ; i < 50 ; i++){
+            setpt_.pose.position.x = odom_.pose.pose.position.x;
+            setpt_.pose.position.y = odom_.pose.pose.position.y;
+            setpt_.pose.position.z = odom_.pose.pose.position.z;
+            pose_pub_.publish(setpt_);
+
+            lprt.sleep();
         }
 
          std::cout << "we have exitted from prev coord" << std::endl;
@@ -255,42 +292,55 @@ namespace ariitk::planner {
 
         // ros::Rate looprate(20);
         bool flag = true;
+        float sum_x=0, sum_y=0, sum_z=0;
+        int k = 1;
 
         while(flag) {
             ros::spinOnce();
 
-            int c = 5;
-            float sum_x=0, sum_y=0, sum_z=0;
-            while(c>0) {
-            
+            if(!(centre_.x == -1 || centre_.y ==-1) && k == 1){
+                int c = 1;
                 ros::spinOnce();
-            
-                std::cout << "summing" << std::endl;
-                if(!(centre_.x == -1 || centre_.y ==-1)) {
-                    sum_x += estimated_pose_.x ;
-                    sum_y += estimated_pose_.y ;
-                    sum_z += estimated_pose_.z ;
-                    c--;
+                    ros::Rate lprt(30);                          //THIS LOOP IS ONLY FOR STALLING
+                    for(int i = 0 ; i < 100 ; i++){               //MAY BE REMOVED LATER
+                        setpt_.pose.position.x = odom_.pose.pose.position.x;
+                        setpt_.pose.position.y = odom_.pose.pose.position.y;
+                        setpt_.pose.position.z = odom_.pose.pose.position.z;
+                        pose_pub_.publish(setpt_);
+
+                        lprt.sleep();
+                    }
+                while(c>0) {
+                    if(!(centre_.x == -1 || centre_.y ==-1)) {
+                        std::cout << "summing" << std::endl;
+                        sum_x += estimated_pose_.x ;
+                        sum_y += estimated_pose_.y ;
+                        sum_z += estimated_pose_.z ;
+                        c--;
+                    }
+                    else {
+                        std::cout << "globalt i'm fucked, help!" << std::endl;
+                    }
                 }
-                else {
-                    std::cout << "globalt i'm fucked, help!" << std::endl;
-                }
+
+                frame_vec_(0) = sum_x/1;
+                frame_vec_(1) = sum_y/1;
+                frame_vec_(2) = sum_z/1;
+                std::cout << frame_vec_(0) << " " << frame_vec_(1) << " " << frame_vec_(2) << std::endl;
+                k--;
+
             }
-
-            frame_vec_(0) = sum_x/5;
-            frame_vec_(1) = sum_y/5;
-            frame_vec_(2) = sum_z/5;
-
+            
             double d = centre_.d;
             double x = odom_.pose.pose.position.x;
             double y = odom_.pose.pose.position.y;
             double z = odom_.pose.pose.position.z;
 
-            if((centre_.x == -1 || centre_.y ==-1) && (sum_x == 0 && sum_y == 0 && sum_z == 0)) {
+            if((centre_.x == -1 || centre_.y ==-1) && k) {
                 double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)));
                 if(dist < 2) {
                     flag = false;
-                    std::cout << "dist < 2 " <<std::endl;
+                    // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
@@ -301,16 +351,16 @@ namespace ariitk::planner {
                 }
             }
             else {
-                std::cout<<"detected"<<std::endl;
+                // std::cout<<"detected"<<std::endl;
                 double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
-                    std::cout << "distance is now <2" << std::endl;
+                    // std::cout << "distance is now <2" << std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
 
-                    std::cout << "distance is >2" <<std::endl;
+                    // std::cout << "distance is >2" <<std::endl;
                     setpt_.pose.position.x = frame_vec_(0);
                     setpt_.pose.position.y = frame_vec_(1);
                     setpt_.pose.position.z = frame_vec_(2);
