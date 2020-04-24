@@ -1,3 +1,0 @@
-[submodule "simulator/worlds/iros2016_track"]
-	path = simulator/worlds/iros2016_track
-	url = https://github.com/AerialRobotics-IITK/iros2016_track.git

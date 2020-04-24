@@ -213,7 +213,7 @@ namespace ariitk::planner {
 
         double dist = sqrt( (sq(x_try - x_c)) +  (sq(y_try - y_c)) + (sq(z_try - z_c)));
         int count =0;
-        while(dist >=2) {
+        while(dist >=3) {
             ros::spinOnce(); 
             x_c = odom_.pose.pose.position.x;
             y_c = odom_.pose.pose.position.y;
@@ -265,7 +265,7 @@ namespace ariitk::planner {
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
 
-        std::cout<< "entering gloablt event" <<std::endl;
+        std::cout<< "entering globalt event" <<std::endl;
 
         //trying something
 
@@ -291,12 +291,12 @@ namespace ariitk::planner {
 
         double dist = sqrt( (sq(x_try -x )) +  (sq(y_try -y)) + (sq(z_try -z)) );
 
-        while(dist <2 ) {
+        while(dist <3) {
             ros::spinOnce();
             looprate.sleep();
             setpt_.pose.position.x = front_pose_.x ;
-            setpt_.pose.position.y = front_pose_.y ;
-            setpt_.pose.position.z = odom_.pose.pose.position.z;
+            setpt_.pose.position.y = front_pose_.y +0.3;
+            setpt_.pose.position.z = odom_.pose.pose.position.z ;
             pose_pub_.publish(setpt_);
             x = odom_.pose.pose.position.x;
             y = odom_.pose.pose.position.y;
@@ -305,10 +305,10 @@ namespace ariitk::planner {
             //std::cout << "distance: " << dist << std::endl;
         }
 
-         mavros_msgs::SetMode offb_set_mode;
-        offb_set_mode.request.custom_mode = "AUTO.LOITER";
-        set_mode_client_.call(offb_set_mode);
-        ROS_INFO_ONCE("AUTO.LOITER TRIGGERED");
+        //  mavros_msgs::SetMode offb_set_mode;
+        // offb_set_mode.request.custom_mode = "AUTO.LOITER";
+        // set_mode_client_.call(offb_set_mode);
+        // ROS_INFO_ONCE("AUTO.LOITER TRIGGERED");
 
         // ros::Rate looprate(20);
         // bool flag = true;
@@ -349,22 +349,37 @@ namespace ariitk::planner {
         // }
 
 
-
-        int c = 1;
+        int c = 5;
+        int a=1;
         float sum_x=0, sum_y=0, sum_z=0;
         while(c>0) {
 
-            std::cout << "summing" << std::endl;
             ros::spinOnce();
-            sum_x += estimated_pose_.x;
-            sum_y += estimated_pose_.y;
-            sum_z += estimated_pose_.z;
-            c--;
+
+            if(!(centre_.x == -1 || centre_.y ==-1)) {
+                std::cout << "summing" << std::endl;
+                sum_x += estimated_pose_.x ;
+                sum_y += estimated_pose_.y ;
+                sum_z += estimated_pose_.z ;
+                c--;
+            }
+            else {
+                //std::cout << "i'm fucked, help!" << std::endl;
+                setpt_.pose.position.x = front_pose_.x ;
+                setpt_.pose.position.y = front_pose_.y ;
+                setpt_.pose.position.z = odom_.pose.pose.position.z ;
+                pose_pub_.publish(setpt_);
+                //setpt_.pose.orientation.z =0.5;
+                // setpt_.pose.orientation = tf::createQuaternionMsgFromYaw(-1.57);
+                // pose_pub_.publish(setpt_);
+                
+            }
+            
         }
 
-        x_try = sum_x/1;
-        y_try = sum_y/1;
-        z_try = sum_z/1;
+        x_try = sum_x/5;
+        y_try = sum_y/5;
+        z_try = sum_z/5;
 
         
         //Rotate drone according to next frame
