@@ -20,6 +20,7 @@
 #include <std_msgs/String.h>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
+#include <tf/tf.h>
 
 #define echo(X) std::cout << X << std::endl
 

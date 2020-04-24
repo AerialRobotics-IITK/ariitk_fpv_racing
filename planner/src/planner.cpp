@@ -251,6 +251,7 @@ namespace ariitk::planner {
             lprt.sleep();
         }
 
+        ros::spinOnce();
         drone_vec_(0) = odom_.pose.pose.position.x;
         drone_vec_(1) = odom_.pose.pose.position.y;
         drone_vec_(2) = odom_.pose.pose.position.z;
@@ -268,16 +269,17 @@ namespace ariitk::planner {
 
             setpt_.pose.position.x = drone_vec_(0) + traj_vec_(0) ;
             setpt_.pose.position.y = drone_vec_(1) + traj_vec_(1) ;
-            setpt_.pose.position.z = drone_vec_(2) + traj_vec_(2) ;
+            setpt_.pose.position.z = 2.7/* drone_vec_(2) + traj_vec_(2) */ ;
             // std::cout << "prev coord publishing" << std::endl;
             pose_pub_.publish(setpt_);
             dist = sqrt( (sq(frame_vec_(0) - drone_vec_(0))) +  (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
         }
 
-        for(int i = 0 ; i < 50 ; i++){
+        for(int i = 0 ; i < 20 ; i++){
             setpt_.pose.position.x = odom_.pose.pose.position.x;
             setpt_.pose.position.y = odom_.pose.pose.position.y;
             setpt_.pose.position.z = odom_.pose.pose.position.z;
+            setpt_.pose.orientation = tf::createQuaternionMsgFromYaw(-1.57);
             pose_pub_.publish(setpt_);
 
             lprt.sleep();
@@ -288,16 +290,20 @@ namespace ariitk::planner {
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
 
+        rough_pose_.x = 18;
+        rough_pose_.y = 3;
+        rough_pose_.z = 2.7;
+
         std::cout<< "entering gloablt event" <<std::endl;
 
         // ros::Rate looprate(20);
         bool flag = true;
-        float sum_x=0, sum_y=0, sum_z=0;
         int k = 1;
 
         while(flag) {
             ros::spinOnce();
 
+            float sum_x=0, sum_y=0, sum_z=0;
             if(!(centre_.x == -1 || centre_.y ==-1) && k == 1){
                 int c = 1;
                 ros::spinOnce();
@@ -327,7 +333,7 @@ namespace ariitk::planner {
                 frame_vec_(1) = sum_y/1;
                 frame_vec_(2) = sum_z/1;
                 std::cout << frame_vec_(0) << " " << frame_vec_(1) << " " << frame_vec_(2) << std::endl;
-                k--;
+                if(frame_vec_(2)>0) k--;
 
             }
             
@@ -363,7 +369,7 @@ namespace ariitk::planner {
                     // std::cout << "distance is >2" <<std::endl;
                     setpt_.pose.position.x = frame_vec_(0);
                     setpt_.pose.position.y = frame_vec_(1);
-                    setpt_.pose.position.z = frame_vec_(2);
+                    setpt_.pose.position.z = 2.7/* frame_vec_(2) */;
                     pose_pub_.publish(setpt_);
                 }                
             }     
