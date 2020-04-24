@@ -12,6 +12,16 @@ namespace ariitk::planner {
 
     bool fsm::verbose =true;
     void fsm::init(ros::NodeHandle& nh) {
+
+        ros::NodeHandle nh_private("~");
+
+        float frame1[3],frame2[3],frame3[3];
+
+        nh_private.getParam("frame1", frame1 );
+        nh_private.getParam("frame2", frame2 );
+        nh_private.getParam("frame3", frame3 );
+        
+
         odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odomCallback, this);
         centre_sub_ = nh.subscribe("centre_coord", 10, &fsm::centreCallback, this);
         est_pose_sub_ = nh.subscribe("estimated_coord", 10, &fsm::estimatedCallback, this);
