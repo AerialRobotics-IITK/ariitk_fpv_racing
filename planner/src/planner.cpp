@@ -2,6 +2,8 @@
 
 #define sq(x) (x)*(x)
 #define echo(X) std::cout << X << std::endl
+int p = 0;
+double yaw_change = 0;
 
 namespace msm = boost::msm;
 // typedef msm::back::state_machine<fsm> fsm_;
@@ -15,11 +17,22 @@ namespace ariitk::planner {
 
         ros::NodeHandle nh_private("~");
 
-        float frame1[3],frame2[3],frame3[3];
 
-        nh_private.getParam("frame1", frame1 );
-        nh_private.getParam("frame2", frame2 );
-        nh_private.getParam("frame3", frame3 );
+        // nh_private.getParam("frame1", rough_pose_[0] );
+        // nh_private.getParam("frame2", rough_pose_[1] );
+        // nh_private.getParam("frame3", rough_pose_[2] );
+        rough_pose_[0][0] = 5.0;
+        rough_pose_[0][1] = 2.7;
+        rough_pose_[0][2] = 2.7;
+        rough_pose_[1][0] = 8.0;
+        rough_pose_[1][1] = -3.0;
+        rough_pose_[1][2] = 2.7;
+        rough_pose_[2][0] = 6.0;
+        rough_pose_[2][1] = -6.0;
+        rough_pose_[2][2] = 2.7;
+        // std::cout << rough_pose_[0][2] << std::endl;
+        // std::cout << rough_pose_[1][2] << std::endl;
+        // std::cout << rough_pose_[2][2] << std::endl;
         
 
         odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odomCallback, this);
@@ -116,37 +129,10 @@ namespace ariitk::planner {
         offb_set_mode.request.custom_mode = "OFFBOARD";
         set_mode_client_.call(offb_set_mode);
 
-        rough_pose_.x = 18;
-        rough_pose_.y = 3;
-        rough_pose_.z = 2.7;
-
         ros::Rate looprate(20);
         bool flag = true;
         float sum_x=0, sum_y=0, sum_z=0;
         int k = 1;
-
-        // int c = 5 , num = 1;
-        //     float sum_x=0, sum_y=0, sum_z=0;
-        //     while(c>0 && !(centre_.x == -1 || centre_.y ==-1)) {
-            
-        //         ros::spinOnce();
-            
-        //         std::cout << "summing" << std::endl;
-        //         if(!(centre_.x == -1 || centre_.y ==-1)) {
-        //             sum_x += estimated_pose_.x ;
-        //             sum_y += estimated_pose_.y ;
-        //             sum_z += estimated_pose_.z ;
-        //             num ++;
-        //             c--;
-        //         }
-        //         else {
-        //             std::cout << "i'm fucked, help!" << std::endl;
-        //         }
-        //     }
-        //     if(num>1) num--;
-        //     frame_vec_(0) = sum_x/5;
-        //     frame_vec_(1) = sum_y/5;
-        //     frame_vec_(2) = sum_z/5;
 
         while(flag) {
             ros::spinOnce();
@@ -177,46 +163,22 @@ namespace ariitk::planner {
 
             }
 
-            // int c = 0 , num = 1;
-            // float sum_x=0, sum_y=0, sum_z=0;
-            // while(c<5 && !(centre_.x == -1 || centre_.y ==-1)) {
-            
-            //     ros::spinOnce();
-            
-            //     std::cout << "summing" << std::endl;
-            //     if(!(centre_.x == -1 || centre_.y ==-1)) {
-            //         sum_x += estimated_pose_.x ;
-            //         sum_y += estimated_pose_.y ;
-            //         sum_z += estimated_pose_.z ;
-            //         num ++;
-            //         c++;
-            //     }
-            //     else {
-            //         std::cout << "i'm fucked, help!" << std::endl;
-            //         c++;
-            //     }
-            // }
-            // if(num>1) num--;
-            // frame_vec_(0) = sum_x/num;
-            // frame_vec_(1) = sum_y/num;
-            // frame_vec_(2) = sum_z/num;
-
             double d = centre_.d;
             double x = odom_.pose.pose.position.x;
             double y = odom_.pose.pose.position.y;
             double z = odom_.pose.pose.position.z;
 
             if((centre_.x == -1 || centre_.y ==-1) && (sum_x == 0 && sum_y == 0 && sum_z == 0)) {
-                double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)));
+                double dist = sqrt( (sq(rough_pose_[p][0] - x)) +  (sq(rough_pose_[p][1] - y)));
                 if(dist < 2) {
                     flag = false;
                     // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
-                    setpt_.pose.position.x = rough_pose_.x;
-                    setpt_.pose.position.y = rough_pose_.y;
-                    setpt_.pose.position.z = rough_pose_.z;
+                    setpt_.pose.position.x = rough_pose_[p][0];
+                    setpt_.pose.position.y = rough_pose_[p][1];
+                    setpt_.pose.position.z = rough_pose_[p][2];
                     pose_pub_.publish(setpt_);
                 }
             }
@@ -267,9 +229,9 @@ namespace ariitk::planner {
         drone_vec_(2) = odom_.pose.pose.position.z;
         double dist = sqrt( (sq(frame_vec_(0) - drone_vec_(0))) +  (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
 
-        traj_vec_(0) = ((frame_vec_(0)-drone_vec_(0))/dist)*4;
-        traj_vec_(1) = ((frame_vec_(1)-drone_vec_(1))/dist)*4;
-        traj_vec_(2) = ((frame_vec_(2)-drone_vec_(2))/dist)*4;
+        traj_vec_(0) = ((frame_vec_(0)-drone_vec_(0))/dist)*2;
+        traj_vec_(1) = ((frame_vec_(1)-drone_vec_(1))/dist)*2;
+        traj_vec_(2) = ((frame_vec_(2)-drone_vec_(2))/dist)*2;
         
         while(dist < 2.0) {
             ros::spinOnce(); 
@@ -285,24 +247,40 @@ namespace ariitk::planner {
             dist = sqrt( (sq(frame_vec_(0) - drone_vec_(0))) +  (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
         }
 
-        for(int i = 0 ; i < 20 ; i++){
+        double v1x,v1y,v2x,v2y;
+        v1x = front_pose_.x - odom_.pose.pose.position.x;
+        v1y = front_pose_.y - odom_.pose.pose.position.y;
+        double mod_v1 = sqrt(sq(v1x) + sq(v1y));
+        v2x = rough_pose_[p+1][0] - odom_.pose.pose.position.x;
+        v2y = rough_pose_[p+1][1] - odom_.pose.pose.position.y;
+        double mod_v2 = sqrt(sq(v2x) + sq(v2y));
+        double crossp = ((v1x*v2y) - (v1y*v2x))/(mod_v1*mod_v2);
+
+        yaw_change += asin(crossp);
+        std::cout << crossp << std::endl << v1x << " " << v1y << " " << v2x << " " << v2y << std::endl << mod_v1 << " " << mod_v2 << std::endl;
+
+        for(int i = 0 ; i < 40 ; i++){
             setpt_.pose.position.x = odom_.pose.pose.position.x;
             setpt_.pose.position.y = odom_.pose.pose.position.y;
             setpt_.pose.position.z = odom_.pose.pose.position.z;
-            setpt_.pose.orientation = tf::createQuaternionMsgFromYaw(-1.57);
+            setpt_.pose.orientation = tf::createQuaternionMsgFromYaw(yaw_change);
             pose_pub_.publish(setpt_);
 
             lprt.sleep();
         }
 
-         std::cout << "we have exitted from prev coord" << std::endl;
+        p++;
+
+        std::cout << "p has been changed:" << p << std::endl;
+
+        std::cout << "we have exitted from prev coord" << std::endl;
     }
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
 
-        rough_pose_.x = 18;
-        rough_pose_.y = 3;
-        rough_pose_.z = 2.7;
+        rough_pose_[p][0] = 18;
+        rough_pose_[p][1] = 3;
+        rough_pose_[p][2] = 2.7;
 
         std::cout<< "entering gloablt event" <<std::endl;
 
@@ -353,16 +331,16 @@ namespace ariitk::planner {
             double z = odom_.pose.pose.position.z;
 
             if((centre_.x == -1 || centre_.y ==-1) && k) {
-                double dist = sqrt( (sq(rough_pose_.x - x)) +  (sq(rough_pose_.y - y)));
+                double dist = sqrt( (sq(rough_pose_[p][0] - x)) +  (sq(rough_pose_[p][1] - y)));
                 if(dist < 2) {
                     flag = false;
                     // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
-                    setpt_.pose.position.x = rough_pose_.x;
-                    setpt_.pose.position.y = rough_pose_.y;
-                    setpt_.pose.position.z = rough_pose_.z;
+                    setpt_.pose.position.x = rough_pose_[p][0];
+                    setpt_.pose.position.y = rough_pose_[p][1];
+                    setpt_.pose.position.z = rough_pose_[p][2];
                     pose_pub_.publish(setpt_);
                 }
             }

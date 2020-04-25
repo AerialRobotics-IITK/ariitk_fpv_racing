@@ -7,6 +7,7 @@
 #include <boost/msm/front/state_machine_def.hpp>
 #include <iostream>
 #include <math.h>
+#include <vector>
 
 #include <ros/ros.h>
 #include <mavros_msgs/CommandBool.h>
@@ -56,13 +57,15 @@ class fsm : public msm::front::state_machine_def<fsm>
         nav_msgs::Odometry odom_;
         detector_msgs::centre centre_;
         detector_msgs::global_coord estimated_pose_;
-        detector_msgs::global_coord rough_pose_;
+        // detector_msgs::global_coord rough_pose_;
         detector_msgs::global_coord front_pose_;
         geometry_msgs::PoseStamped setpt_;
         mavros_msgs::State current_state_;
         Eigen::Vector3d frame_vec_;
         Eigen::Vector3d drone_vec_;
         Eigen::Vector3d traj_vec_;
+        // std::vector<double> rough_pose_[3];
+        double rough_pose_[3][3];
 
         ros::Publisher pose_pub_;
         ros::Publisher state_pub_;
@@ -76,7 +79,8 @@ class fsm : public msm::front::state_machine_def<fsm>
         ros::ServiceClient arming_client_;
         ros::ServiceClient set_mode_client_;
 
-        float x_try, y_try, z_try;
+        // int p; 
+        // double yaw_change;
 
     public:
         static bool verbose;
