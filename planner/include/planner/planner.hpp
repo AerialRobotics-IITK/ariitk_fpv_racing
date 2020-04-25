@@ -57,14 +57,13 @@ class fsm : public msm::front::state_machine_def<fsm>
         nav_msgs::Odometry odom_;
         detector_msgs::centre centre_;
         detector_msgs::global_coord estimated_pose_;
-        // detector_msgs::global_coord rough_pose_;
         detector_msgs::global_coord front_pose_;
         geometry_msgs::PoseStamped setpt_;
         mavros_msgs::State current_state_;
         Eigen::Vector3d frame_vec_;
         Eigen::Vector3d drone_vec_;
         Eigen::Vector3d traj_vec_;
-        // std::vector<double> rough_pose_[3];
+        // std::vector<double> rough_pose1_;
         double rough_pose_[3][3];
 
         ros::Publisher pose_pub_;

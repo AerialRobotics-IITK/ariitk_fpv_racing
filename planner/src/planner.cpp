@@ -6,7 +6,6 @@ int p = 0;
 double yaw_change = 0;
 
 namespace msm = boost::msm;
-// typedef msm::back::state_machine<fsm> fsm_;
 typedef msm::back::state_machine<ariitk::planner::fsm> fsm_;
 static char const *const state_names[] = { "Rest", "Hover", "Before", "After" };
 
@@ -17,8 +16,7 @@ namespace ariitk::planner {
 
         ros::NodeHandle nh_private("~");
 
-
-        // nh_private.getParam("frame1", rough_pose_[0] );
+        // nh_private.getParam("frame1", rough_pose1_ );
         // nh_private.getParam("frame2", rough_pose_[1] );
         // nh_private.getParam("frame3", rough_pose_[2] );
         rough_pose_[0][0] = 5.0;
@@ -30,7 +28,7 @@ namespace ariitk::planner {
         rough_pose_[2][0] = 6.0;
         rough_pose_[2][1] = -6.0;
         rough_pose_[2][2] = 2.7;
-        // std::cout << rough_pose_[0][2] << std::endl;
+        // std::cout << rough_pose1_[2] << std::endl;
         // std::cout << rough_pose_[1][2] << std::endl;
         // std::cout << rough_pose_[2][2] << std::endl;
         
@@ -94,7 +92,7 @@ namespace ariitk::planner {
             if(odom_.pose.pose.position.z >= 1.8) {
                 offb_set_mode.request.custom_mode = "AUTO.LOITER";
                 set_mode_client_.call(offb_set_mode);
-                ROS_INFO_ONCE("AUTO.LOITER TRIGGERED");
+                ROS_INFO_ONCE("AUTO.LOITER Triggered");
                 break;
             }
 
@@ -123,7 +121,7 @@ namespace ariitk::planner {
 
     void fsm::DetectionBased(CmdEstimated const &cmd) {
 
-        std::cout << "entering detection based event" << std::endl;
+        ROS_INFO("Entering detection based event");
 
         mavros_msgs::SetMode offb_set_mode;
         offb_set_mode.request.custom_mode = "OFFBOARD";
@@ -143,7 +141,7 @@ namespace ariitk::planner {
             
                     ros::spinOnce();
             
-                    std::cout << "summing" << std::endl;
+                    // std::cout << "summing" << std::endl;
                     if(!(centre_.x == -1 || centre_.y ==-1)) {
                         sum_x += estimated_pose_.x ;
                         sum_y += estimated_pose_.y ;
@@ -201,12 +199,12 @@ namespace ariitk::planner {
             }     
         }
 
-        std::cout << "exitting detection based event" << std::endl;
+        ROS_INFO("Exitting detection based event");
     }
 
     void fsm::PrevCoord(CmdPass const &cmd) {
         ros::spinOnce();
-        std::cout << "we have entered prev coord" << std::endl;
+        ROS_INFO("Entering PrevCoord event");
 
         mavros_msgs::SetMode offb_set_mode;
         offb_set_mode.request.custom_mode = "OFFBOARD";
@@ -273,16 +271,12 @@ namespace ariitk::planner {
 
         std::cout << "p has been changed:" << p << std::endl;
 
-        std::cout << "we have exitted from prev coord" << std::endl;
+        ROS_INFO("Exiting PrevCoord event");
     }
     
     void fsm::GlobalT(CmdGlobalT const &cmd) {
 
-        rough_pose_[p][0] = 18;
-        rough_pose_[p][1] = 3;
-        rough_pose_[p][2] = 2.7;
-
-        std::cout<< "entering gloablt event" <<std::endl;
+        ROS_INFO("Entering GlobalT event");
 
         // ros::Rate looprate(20);
         bool flag = true;
@@ -363,7 +357,7 @@ namespace ariitk::planner {
             }     
         }
 
-        std::cout << "exitting gloablt state"<<std::endl;
+        ROS_INFO("Exiting GlobalT event");
 
     }
 
