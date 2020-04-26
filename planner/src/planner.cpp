@@ -19,15 +19,18 @@ namespace ariitk::planner {
         // nh_private.getParam("frame1", rough_pose1_ );
         // nh_private.getParam("frame2", rough_pose_[1] );
         // nh_private.getParam("frame3", rough_pose_[2] );
-        rough_pose_[0][0] = 5.0;
-        rough_pose_[0][1] = 2.7;
+        rough_pose_[0][0] = 6.0;
+        rough_pose_[0][1] = -0.5;
         rough_pose_[0][2] = 2.7;
         rough_pose_[1][0] = 8.0;
-        rough_pose_[1][1] = -3.0;
+        rough_pose_[1][1] = -4.0;
         rough_pose_[1][2] = 2.7;
         rough_pose_[2][0] = 6.0;
         rough_pose_[2][1] = -6.0;
         rough_pose_[2][2] = 2.7;
+        rough_pose_[3][0] = 2.0;
+        rough_pose_[3][1] = -2.0;
+        rough_pose_[3][2] = 2.7;
         // std::cout << rough_pose1_[2] << std::endl;
         // std::cout << rough_pose_[1][2] << std::endl;
         // std::cout << rough_pose_[2][2] << std::endl;
@@ -167,16 +170,16 @@ namespace ariitk::planner {
             double z = odom_.pose.pose.position.z;
 
             if((centre_.x == -1 || centre_.y ==-1) && (sum_x == 0 && sum_y == 0 && sum_z == 0)) {
-                double dist = sqrt( (sq(rough_pose_[p][0] - x)) +  (sq(rough_pose_[p][1] - y)));
+                double dist = sqrt( (sq(rough_pose_[p%4][0] - x)) +  (sq(rough_pose_[p%4][1] - y)));
                 if(dist < 2) {
                     flag = false;
                     // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
-                    setpt_.pose.position.x = rough_pose_[p][0];
-                    setpt_.pose.position.y = rough_pose_[p][1];
-                    setpt_.pose.position.z = rough_pose_[p][2];
+                    setpt_.pose.position.x = rough_pose_[p%4][0];
+                    setpt_.pose.position.y = rough_pose_[p%4][1];
+                    setpt_.pose.position.z = rough_pose_[p%4][2];
                     pose_pub_.publish(setpt_);
                 }
             }
@@ -249,8 +252,8 @@ namespace ariitk::planner {
         v1x = front_pose_.x - odom_.pose.pose.position.x;
         v1y = front_pose_.y - odom_.pose.pose.position.y;
         double mod_v1 = sqrt(sq(v1x) + sq(v1y));
-        v2x = rough_pose_[p+1][0] - odom_.pose.pose.position.x;
-        v2y = rough_pose_[p+1][1] - odom_.pose.pose.position.y;
+        v2x = rough_pose_[(p%4)+1][0] - odom_.pose.pose.position.x;
+        v2y = rough_pose_[(p%4)+1][1] - odom_.pose.pose.position.y;
         double mod_v2 = sqrt(sq(v2x) + sq(v2y));
         double crossp = ((v1x*v2y) - (v1y*v2x))/(mod_v1*mod_v2);
 
@@ -325,16 +328,16 @@ namespace ariitk::planner {
             double z = odom_.pose.pose.position.z;
 
             if((centre_.x == -1 || centre_.y ==-1) && k) {
-                double dist = sqrt( (sq(rough_pose_[p][0] - x)) +  (sq(rough_pose_[p][1] - y)));
+                double dist = sqrt( (sq(rough_pose_[p%4][0] - x)) +  (sq(rough_pose_[p%4][1] - y)));
                 if(dist < 2) {
                     flag = false;
                     // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
-                    setpt_.pose.position.x = rough_pose_[p][0];
-                    setpt_.pose.position.y = rough_pose_[p][1];
-                    setpt_.pose.position.z = rough_pose_[p][2];
+                    setpt_.pose.position.x = rough_pose_[p%4][0];
+                    setpt_.pose.position.y = rough_pose_[p%4][1];
+                    setpt_.pose.position.z = rough_pose_[p%4][2];
                     pose_pub_.publish(setpt_);
                 }
             }

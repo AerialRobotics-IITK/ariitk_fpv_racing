@@ -64,7 +64,7 @@ class fsm : public msm::front::state_machine_def<fsm>
         Eigen::Vector3d drone_vec_;
         Eigen::Vector3d traj_vec_;
         // std::vector<double> rough_pose1_;
-        double rough_pose_[3][3];
+        double rough_pose_[4][3];
 
         ros::Publisher pose_pub_;
         ros::Publisher state_pub_;
