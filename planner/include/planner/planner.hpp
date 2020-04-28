@@ -63,7 +63,6 @@ class fsm : public msm::front::state_machine_def<fsm>
         Eigen::Vector3d frame_vec_;
         Eigen::Vector3d drone_vec_;
         Eigen::Vector3d traj_vec_;
-        // std::vector<double> rough_pose1_;
         double rough_pose_[4][3];
 
         ros::Publisher pose_pub_;
@@ -78,8 +77,6 @@ class fsm : public msm::front::state_machine_def<fsm>
         ros::ServiceClient arming_client_;
         ros::ServiceClient set_mode_client_;
 
-        // int p; 
-        // double yaw_change;
 
     public:
         static bool verbose;
@@ -154,8 +151,8 @@ class fsm : public msm::front::state_machine_def<fsm>
         typedef Rest initial_state;
         typedef msm::back::state_machine<fsm> fsm_;
 
-        //fsm(ros::NodeHandle& nh);
         void init(ros::NodeHandle& nh);
+        
         //state transition funcitons
         void TakeOff (CmdTakeOff const &cmd);
         void DetectionBased (CmdEstimated const &cmd);
@@ -200,7 +197,5 @@ class fsm : public msm::front::state_machine_def<fsm>
 
 };
 
-//bool fsm::verbose {true};
-// typedef msm::back::state_machine<fsm> fsm_;
 
 } // namespace ariitk::planner

@@ -3,19 +3,6 @@
 namespace ariitk::pose_estimation {
 
 PoseEstimation::PoseEstimation() {
-    
-    //set cam _to_quad_
-    //set cam_matrix_
-
-    // cam_matrix_(0,0) = 277.191356;
-    // cam_matrix_(0,1) = 0;
-    // cam_matrix_(0,2) = 320.5;
-    // cam_matrix_(1,0) = 0;
-    // cam_matrix_(1,1) = 277.191356;
-    // cam_matrix_(1,2) = 240.5;
-    // cam_matrix_(2,0) = 0;
-    // cam_matrix_(2,1) = 0;
-    // cam_matrix_(2,2) = 1.0;
 
     cam_matrix_(0,0) = 277.191356;
     cam_matrix_(0,1) = 0;
@@ -27,16 +14,6 @@ PoseEstimation::PoseEstimation() {
     cam_matrix_(2,1) = 0;
     cam_matrix_(2,2) = 1.0;
 
-    // cam_matrix_(0,0) = 476.7030836014194;
-    // cam_matrix_(0,1) = 0;
-    // cam_matrix_(0,2) = 400.5;
-    // cam_matrix_(1,0) = 0;
-    // cam_matrix_(1,1) = 476.7030836014194;
-    // cam_matrix_(1,2) = 400.5;
-    // cam_matrix_(2,0) = 0;
-    // cam_matrix_(2,1) = 0;
-    // cam_matrix_(2,2) = 1;
-    
     cam_to_quad_(0,0) = 0;
     cam_to_quad_(0,1) = 0;
     cam_to_quad_(0,2) = 1;
@@ -46,7 +23,6 @@ PoseEstimation::PoseEstimation() {
     cam_to_quad_(2,0) = 0;
     cam_to_quad_(2,1) = -1;
     cam_to_quad_(2,2) = 0;
-
 
     img_vec_(0)=0;
     img_vec_(1)=0;
@@ -84,20 +60,15 @@ void PoseEstimation::CamToQuad() {
     std::cout << scale_up_(0,0) <<std::endl;
     Eigen::Matrix3d inv_cam_matrix = cam_matrix_.inverse();
     quad_coord_ = cam_to_quad_*scale_up_*inv_cam_matrix*img_vec_ + t_cam_;
-    //quad_coord_ = inv_cam_matrix*img_vec_;
 
-    //std::cout << quad_coord_ <<std::endl;
     }
 
 void PoseEstimation::QuadToGlob(nav_msgs::Odometry odom) {
     glob_coord_ = quad_to_glob_*quad_coord_;
-    //std::cout << odom.pose.pose.position.x << std::endl;
+
     glob_coord_(0) = glob_coord_(0) + odom.pose.pose.position.x;
     glob_coord_(1) = glob_coord_(1) + odom.pose.pose.position.y;
-    glob_coord_(2) = glob_coord_(2) + odom.pose.pose.position.z;
-    //glob_coord_(1) = -(glob_coord_(1)+glob_coord_(2));
-    
-        
+    glob_coord_(2) = glob_coord_(2) + odom.pose.pose.position.z;        
 }
 
 } // ariitk::pose_estimation

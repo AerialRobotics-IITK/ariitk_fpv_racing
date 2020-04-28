@@ -13,7 +13,7 @@ int main(int argc,char** argv) {
     ros::Rate loop_rate(10);
 
     while(ros::ok()) {
-        //std::cout << "pose esti ros package is working" << std::endl;
+
         loop_rate.sleep();
         ros::spinOnce();
         pose_est.run();

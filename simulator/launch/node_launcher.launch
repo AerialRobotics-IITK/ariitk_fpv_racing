@@ -21,7 +21,6 @@
 	    <node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen">
 		    <rosparam file="$(find detector_ros)/config/param.yaml"/>
 		    <remap from="image_raw" to="usb_cam/image_raw" />
-            <!-- <remap from="image_raw" to="camera_red_iris/image_raw" /> -->
             
 	    </node>
     </group>

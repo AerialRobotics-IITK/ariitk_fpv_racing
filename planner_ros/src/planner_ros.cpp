@@ -7,24 +7,18 @@ void fsmROS::init(ros::NodeHandle &nh) {
     machine.start();
     ros::NodeHandle ph("~");
     ph.getParam("transition", transition_time);
-    // ariitk::planner::fsm fsm_;
 
-    // fsm_.init(ph);
     machine.init(nh);
     
-    //auto state = std::async(std::launch::async, planner::fsm::statePublish, ph, &machine);
     machine.process_event(planner::CmdTakeOff());
     machine.process_event(planner::CmdEstimated());
 }
 
 void fsmROS::run() {
 
-    // std::cout<<"start ho gaya"<<std::endl;
     ros::Rate transitRate(50);
-
-    //transitRate.sleep();
     
-    transitRate.sleep();  //have to write in param file
+    transitRate.sleep();  
     machine.process_event(planner::CmdPass());
 
     transitRate.sleep();

@@ -14,27 +14,18 @@ namespace ariitk::planner {
     bool fsm::verbose =true;
     void fsm::init(ros::NodeHandle& nh) {
 
-        ros::NodeHandle nh_private("~");
-
-        // nh_private.getParam("frame1", rough_pose1_ );
-        // nh_private.getParam("frame2", rough_pose_[1] );
-        // nh_private.getParam("frame3", rough_pose_[2] );
-        rough_pose_[0][0] = 6.0;
-        rough_pose_[0][1] = -0.5;
+        rough_pose_[0][0] = 5.0;
+        rough_pose_[0][1] = 0.0;
         rough_pose_[0][2] = 2.7;
         rough_pose_[1][0] = 8.0;
-        rough_pose_[1][1] = -4.0;
+        rough_pose_[1][1] = -6.0;
         rough_pose_[1][2] = 2.7;
-        rough_pose_[2][0] = 6.0;
-        rough_pose_[2][1] = -6.0;
+        rough_pose_[2][0] = 4.0;
+        rough_pose_[2][1] = -9.0;
         rough_pose_[2][2] = 2.7;
         rough_pose_[3][0] = 2.0;
-        rough_pose_[3][1] = -2.0;
+        rough_pose_[3][1] = -4.0;
         rough_pose_[3][2] = 2.7;
-        // std::cout << rough_pose1_[2] << std::endl;
-        // std::cout << rough_pose_[1][2] << std::endl;
-        // std::cout << rough_pose_[2][2] << std::endl;
-        
 
         odom_sub_ = nh.subscribe("mavros/local_position/odom", 10, &fsm::odomCallback, this);
         centre_sub_ = nh.subscribe("centre_coord", 10, &fsm::centreCallback, this);
@@ -70,7 +61,7 @@ namespace ariitk::planner {
         pose.pose.position.y = 0;
         pose.pose.position.z = 2.5;
 
-        for(int i = 100; ros::ok() && i > 0; --i){
+        for(int i = 100; ros::ok() && i > 0; --i) {
             pose_pub_.publish(pose);
             ros::spinOnce();
             rate.sleep();
@@ -143,8 +134,6 @@ namespace ariitk::planner {
                 while(c>0) {
             
                     ros::spinOnce();
-            
-                    // std::cout << "summing" << std::endl;
                     if(!(centre_.x == -1 || centre_.y ==-1)) {
                         sum_x += estimated_pose_.x ;
                         sum_y += estimated_pose_.y ;
@@ -152,7 +141,7 @@ namespace ariitk::planner {
                         c--;
                     }
                     else {
-                        std::cout << "globalt i'm fucked, help!" << std::endl;
+                        std::cout << "centre is not being detected" << std::endl;
                     }
                 }
 
@@ -161,7 +150,6 @@ namespace ariitk::planner {
                 frame_vec_(2) = sum_z/5;
                 std::cout << frame_vec_(0) << " " << frame_vec_(1) << " " << frame_vec_(2) << std::endl;
                 k--;
-
             }
 
             double d = centre_.d;
@@ -173,7 +161,6 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(rough_pose_[p%4][0] - x)) +  (sq(rough_pose_[p%4][1] - y)));
                 if(dist < 2) {
                     flag = false;
-                    // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
@@ -184,16 +171,13 @@ namespace ariitk::planner {
                 }
             }
             else {
-                // std::cout<<"detected"<<std::endl;
+                
                 double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
-                    // std::cout << "distance is now <2" << std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
-
-                    // std::cout << "distance is >2" <<std::endl;
                     setpt_.pose.position.x = frame_vec_(0);
                     setpt_.pose.position.y = frame_vec_(1);
                     setpt_.pose.position.z = frame_vec_(2);
@@ -243,7 +227,7 @@ namespace ariitk::planner {
             setpt_.pose.position.x = drone_vec_(0) + traj_vec_(0) ;
             setpt_.pose.position.y = drone_vec_(1) + traj_vec_(1) ;
             setpt_.pose.position.z = 2.7/* drone_vec_(2) + traj_vec_(2) */ ;
-            // std::cout << "prev coord publishing" << std::endl;
+            
             pose_pub_.publish(setpt_);
             dist = sqrt( (sq(frame_vec_(0) - drone_vec_(0))) +  (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
         }
@@ -271,9 +255,6 @@ namespace ariitk::planner {
         }
 
         p++;
-
-        std::cout << "p has been changed:" << p << std::endl;
-
         ROS_INFO("Exiting PrevCoord event");
     }
     
@@ -281,7 +262,6 @@ namespace ariitk::planner {
 
         ROS_INFO("Entering GlobalT event");
 
-        // ros::Rate looprate(20);
         bool flag = true;
         int k = 1;
 
@@ -310,7 +290,7 @@ namespace ariitk::planner {
                         c--;
                     }
                     else {
-                        std::cout << "globalt i'm fucked, help!" << std::endl;
+                        std::cout << "center is not being detected" << std::endl;
                     }
                 }
 
@@ -331,7 +311,6 @@ namespace ariitk::planner {
                 double dist = sqrt( (sq(rough_pose_[p%4][0] - x)) +  (sq(rough_pose_[p%4][1] - y)));
                 if(dist < 2) {
                     flag = false;
-                    // std::cout << "dist < 2 " <<std::endl;
                     continue;
                 }
                 else if (dist >= 2 ) {
@@ -342,16 +321,13 @@ namespace ariitk::planner {
                 }
             }
             else {
-                // std::cout<<"detected"<<std::endl;
+                
                 double dist = sqrt( (sq(estimated_pose_.x - x)) +  (sq(estimated_pose_.y - y)) + (sq(estimated_pose_.z - z)));
                 if(dist < 2) {
                     flag = false;
-                    // std::cout << "distance is now <2" << std::endl;
                     continue;
                 }
                 else if (dist >=2 ) {
-
-                    // std::cout << "distance is >2" <<std::endl;
                     setpt_.pose.position.x = frame_vec_(0);
                     setpt_.pose.position.y = frame_vec_(1);
                     setpt_.pose.position.z = 2.7/* frame_vec_(2) */;
