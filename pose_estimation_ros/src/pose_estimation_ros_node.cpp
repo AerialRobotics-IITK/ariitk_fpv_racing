@@ -2,23 +2,21 @@
 
 using namespace ariitk::pose_estimation_ros;
 
-int main(int argc,char** argv) {
-    ros::init(argc, argv, "pose_estimation_node");
-    ros::NodeHandle nh;
+int main(int argc, char** argv) {
+	ros::init(argc, argv, "pose_estimation_node");
+	ros::NodeHandle nh;
 
-    PoseEstimationROS pose_est;
+	PoseEstimationROS pose_est;
 
-    pose_est.init(nh);
+	pose_est.init(nh);
 
-    ros::Rate loop_rate(10);
+	ros::Rate loop_rate(10);
 
-    while(ros::ok()) {
+	while (ros::ok()) {
+		loop_rate.sleep();
+		ros::spinOnce();
+		pose_est.run();
+	}
 
-        loop_rate.sleep();
-        ros::spinOnce();
-        pose_est.run();
-    }
-
-    return 0;
-
+	return 0;
 }

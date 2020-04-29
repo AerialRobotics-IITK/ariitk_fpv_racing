@@ -9,15 +9,15 @@ typedef msm::back::state_machine<ariitk::planner::fsm> fsm_;
 namespace ariitk::planner_ros {
 
 class fsmROS {
-    public:
-        fsmROS() {};
-        ~fsmROS() {};
-        void init(ros::NodeHandle& nh);
-        void run();
+	public:
+	fsmROS() {};
+	~fsmROS() {};
+	void init(ros::NodeHandle& nh);
+	void run();
 
-    private:
-        fsm_ machine;
-        float transition_time;
+	private:
+	fsm_ machine;
+	float transition_time;
 };
 
-} //namespace ariitk::planner_ros
+} // namespace ariitk::planner_ros
