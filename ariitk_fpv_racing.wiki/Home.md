@@ -1,7 +1,7 @@
 Welcome to the ariitk_fpv_racing wiki!
 
 # Overview of Project
-The goal is to make a racing drone which goeas around a track autonomously detecting and passing through frames
+The goal is to make a racing drone which goes around a track autonomously, detecting and passing through frames.
 
 ---
 ## Dependencies
@@ -32,7 +32,7 @@ This package has the following dependencies:
 ---
 ## Installation
 
-Create a catkin workspace in home dir ignore if laready done)
+Create a catkin workspace in home dir (ignore if already done)
 ```
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws
