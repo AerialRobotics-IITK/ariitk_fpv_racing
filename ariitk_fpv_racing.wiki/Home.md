@@ -1,7 +1,7 @@
 Welcome to the ariitk_fpv_racing wiki!
 
 # Overview of Project
-The goal is to make a racing drone which goeas around a track autonomously detecting and passing through frames
+The goal is to make a racing drone which goes around a track autonomously, detecting and passing through frames.
 
 ---
 ## Dependencies
@@ -32,7 +32,7 @@ This package has the following dependencies:
 ---
 ## Installation
 
-Create a catkin workspace in home dir ignore if laready done)
+Create a catkin workspace in home dir (ignore if already done)
 ```
     mkdir -p ~/catkin_ws/src
     cd ~/catkin_ws
@@ -130,4 +130,14 @@ Build using ``` catkin build ``` after making sure all the dependencies are met.
     -> thresh_dist : a thresholded distance used in motion planning
 ```
 ---
+
+**Method and Algorithm** :
+```
+    ->Detection of frame based on colour. ApproxPolyDP is used and if it returns 4 points, then we can assertain an quadrilateral (and hence the frame). Further filtering based on contour area to remove noise and faraway frames.
+    
+    ->Distance estimation using similarity of triangles. The distance obtained is the scale factor while going from camera coordinates to world coordinates.
+    
+    ->While the drone is operational, once it passes through one frame, it uses the rough position of the next frame (given manually) to change its yaw.
+ 
+```
 
