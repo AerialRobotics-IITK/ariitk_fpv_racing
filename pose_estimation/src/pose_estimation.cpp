@@ -31,7 +31,7 @@ PoseEstimation::PoseEstimation() {
 	t_cam_(1) = 0.5;
 	t_cam_(2) = 0.02;
 }
-void PoseEstimation::getDistance(float dist = 0.0) {
+void PoseEstimation::getDistance(float& dist) {
 	for (int i = 0; i < 3; i += 1) {
 		for (int j = 0; j < 3; j += 1) {
 			if (i == j)
@@ -42,7 +42,7 @@ void PoseEstimation::getDistance(float dist = 0.0) {
 	}
 }
 
-void PoseEstimation::setImgVec(float x, float y) {
+void PoseEstimation::setImgVec(float& x, float& y) {
 	img_vec_(0) = x;
 	img_vec_(1) = y;
 }
@@ -54,7 +54,7 @@ void PoseEstimation::setQuaternion(nav_msgs::Odometry odom) {
 }
 
 void PoseEstimation::CamToQuad() {
-	std::cout << scale_up_(0, 0) << std::endl;
+	ROS_INFO_STREAM( scale_up_(0, 0) << "\n");
 	Eigen::Matrix3d inv_cam_matrix = cam_matrix_.inverse();
 	quad_coord_ = cam_to_quad_ * scale_up_ * inv_cam_matrix * img_vec_ + t_cam_;
 }

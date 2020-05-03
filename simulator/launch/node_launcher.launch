@@ -6,21 +6,22 @@
 
     <group ns="$(arg mav_name)">
         <node pkg = "planner_ros" type="planner_ros_node" name="planner_node"  output="screen" >
-            <remap from="centre_coord" to="detector_node/centre_coord"/>
-            <remap from="mavros/state" to="/mavros/state"/>
-            <remap from="mavros/setpoint_position/local" to="/mavros/setpoint_position/local" />
-            <remap from="mavros/local_position/odom" to="/mavros/local_position/odom"/>
-            <remap from="estimated_coord" to="pose_estimation_node/estimated_coord"/>
-            <remap from="mavros/cmd/arming" to="/mavros/cmd/arming"/>
-            <remap from="mavros/set_mode" to="/mavros/set_mode"/>
+            <remap from="centre_coord"                      to="detector_node/centre_coord"/>
+            <remap from="mavros/state"                      to="/mavros/state"/>
+            <remap from="mavros/setpoint_position/local"    to="/mavros/setpoint_position/local" />
+            <remap from="mavros/local_position/odom"        to="/mavros/local_position/odom"/>
+            <remap from="estimated_coord"                   to="pose_estimation_node/estimated_coord"/>
+            <remap from="mavros/cmd/arming"                 to="/mavros/cmd/arming"/>
+            <remap from="mavros/set_mode"                   to="/mavros/set_mode"/>
+            <rosparam file="$(find planner)/config/planner_params.yaml"/>
         </node>        
 	    <node pkg="pose_estimation_ros" type="pose_estimation_ros_node" name="pose_estimation_node"> 
-            <remap from="mavros/local_position/odom" to="/mavros/local_position/odom"/>
-            <remap from="centre_coord" to="detector_node/centre_coord"/>
+            <remap from="mavros/local_position/odom"        to="/mavros/local_position/odom"/>
+            <remap from="centre_coord"                      to="detector_node/centre_coord"/>
         </node>
 	    <node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen">
 		    <rosparam file="$(find detector_ros)/config/param.yaml"/>
-		    <remap from="image_raw" to="usb_cam/image_raw" />
+		    <remap from="image_raw"                         to="usb_cam/image_raw" />
             
 	    </node>
     </group>

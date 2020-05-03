@@ -5,6 +5,7 @@ namespace ariitk::detector {
 
 Detector::~Detector() { cv::destroyAllWindows(); }
 
+double Detector::scalef = 77 * 4.2;
 void Detector::setCannyParams(const int& l, const int& u, const int& s) {
 	canny_param_low_ = l;
 	canny_param_upper_ = u;
@@ -76,7 +77,7 @@ void Detector::findFrameCentre(cv::Mat& board) {
 				centre_.second /= 4;
 				distance_ =
 				    sqrt((approx[1].x - approx[0].x) * (approx[1].x - approx[0].x) + (approx[1].y - approx[0].y) * (approx[1].y - approx[0].y));
-				distance_ = 77 * 4.2 / distance_;
+				distance_ = scalef/ distance_;
 				cv::circle(board, cv::Point(centre_.first, centre_.second), 5, cv::Scalar(0, 255, 0), -1);
 			} else {
 				centre_.first = -1;

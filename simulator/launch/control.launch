@@ -4,16 +4,13 @@
 			<arg name="world" default="$(find simulator)/worlds/final_testing.world"/>
 		    <arg name="vehicle" value="iris" />
 	</include>		 
-	<!-- <node pkg="control" type="controller" name="controller"/> -->
-	<!-- <node pkg = "planner_ros" type="planner_ros_node" name="planner_node" output="screen"/> -->
-	
 	<node pkg="pose_estimation_ros" type="pose_estimation_ros_node" name="pose_estimation_node" output="screen"/>
 	<node pkg="detector_ros" type="detector_ros_node" name="detector_node" output="screen">
 		<rosparam file="$(find detector_ros)/config/param.yaml"/>
-		<remap from="image_raw" to="iris/camera_red_iris/image_raw" />
+		<remap from="image_raw" 			to="iris/camera_red_iris/image_raw" />
 	</node>
 	<node pkg = "planner_ros" type="planner_ros_node" name="planner_node" output="screen">
-		<remap from="mavros/cmd/arming" to="/mavros/cmd/arming"/>
-        <remap from="mavros/set_mode" to="/mavros/set_mode"/>
+		<remap from="mavros/cmd/arming" 	to="/mavros/cmd/arming"/>
+        <remap from="mavros/set_mode" 		to="/mavros/set_mode"/>
 	</node>
 </launch>

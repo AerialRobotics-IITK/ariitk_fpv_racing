@@ -4,20 +4,20 @@
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
 
-typedef msm::back::state_machine<ariitk::planner::fsm> fsm_;
+typedef msm::back::state_machine<ariitk::planner::FSM> FSM_;
 
 namespace ariitk::planner_ros {
 
 class fsmROS {
 	public:
-	fsmROS() {};
-	~fsmROS() {};
-	void init(ros::NodeHandle& nh);
-	void run();
+		fsmROS() {};
+		~fsmROS() {};
+		void init(ros::NodeHandle& nh);
+		void run();
 
 	private:
-	fsm_ machine;
-	float transition_time;
+		FSM_ machine;
+		float transition_time;
 };
 
 } // namespace ariitk::planner_ros

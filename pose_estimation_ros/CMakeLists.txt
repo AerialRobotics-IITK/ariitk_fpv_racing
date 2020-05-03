@@ -15,6 +15,5 @@ cs_add_library(pose_estimation_ros_lib src/pose_estimation_ros.cpp)
 cs_add_executable(pose_estimation_ros_node src/pose_estimation_ros.cpp src/pose_estimation_ros_node.cpp)
 target_link_libraries(pose_estimation_ros_node pose_estimation_ros_lib) 
 
-
 cs_install()
 cs_export()

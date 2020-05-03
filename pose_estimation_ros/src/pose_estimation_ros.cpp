@@ -19,10 +19,11 @@ void PoseEstimationROS::run() {
 	if ((centre_coord_.x == -1) || (centre_coord_.y == -1)) {
 		glob_coord_pub_.publish(global_coord_);
 		return;
-	};
-
-	pose_est_.getDistance(5.0);
-	pose_est_.setImgVec(160, 120); // point of the image's centre
+	}
+	float dist = 5.0;
+	float x_m = 160, y_m = 120;
+	pose_est_.getDistance(dist);
+	pose_est_.setImgVec(x_m, y_m); // point of the image's centre
 	pose_est_.CamToQuad();
 	pose_est_.setQuaternion(odom_);
 	pose_est_.QuadToGlob(odom_);
@@ -34,8 +35,10 @@ void PoseEstimationROS::run() {
 
 	front_coord_pub_.publish(front_coord_);
 
-	pose_est_.getDistance(centre_coord_.d);
-	pose_est_.setImgVec(centre_coord_.x, centre_coord_.y);
+	dist = centre_coord_.d;
+	x_m = centre_coord_.x,y_m = centre_coord_.y; 
+	pose_est_.getDistance(dist);
+	pose_est_.setImgVec(x_m, y_m);
 	pose_est_.CamToQuad();
 	pose_est_.setQuaternion(odom_);
 	pose_est_.QuadToGlob(odom_);

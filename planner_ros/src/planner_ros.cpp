@@ -14,7 +14,7 @@ void fsmROS::init(ros::NodeHandle& nh) {
 }
 
 void fsmROS::run() {
-	ros::Rate transitRate(50);
+	ros::Rate transitRate(20);
 
 	transitRate.sleep();
 	machine.process_event(planner::CmdPass());

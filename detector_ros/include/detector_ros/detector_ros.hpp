@@ -10,25 +10,25 @@ namespace ariitk::detector_ros {
 
 class DetectorROS {
 	public:
-	DetectorROS() {};
-	~DetectorROS() {};
-	void init(ros::NodeHandle& nh);
-	void run();
+		DetectorROS() {};
+		~DetectorROS() {};
+		void init(ros::NodeHandle& nh);
+		void run();
 
 	private:
-	void imageCallback(const sensor_msgs::ImageConstPtr& msg);
-	cv::Mat img_;
+		void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+		cv::Mat img_;
 
-	ros::Subscriber img_sub_;
+		ros::Subscriber img_sub_;
 
-	ros::Publisher centre_pub_;
-	ros::Publisher thresh_pub_;
-	ros::Publisher contour_pub_;
-	ros::Publisher centre_img_pub_;
+		ros::Publisher centre_pub_;
+		ros::Publisher thresh_pub_;
+		ros::Publisher contour_pub_;
+		ros::Publisher centre_img_pub_;
 
-	ariitk::detector::Detector detect_;
+		ariitk::detector::Detector detect_;
 
-	detector_msgs::centre centre_coord_;
+		detector_msgs::centre centre_coord_;
 };
 
 } // namespace ariitk::detector_ros
