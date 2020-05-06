@@ -41,5 +41,3 @@ class PoseEstimationROS {
 };
 
 } // namespace ariitk::pose_estimation_ros
-
-// NOTE: Drone Rotation To Be Done In This Package
