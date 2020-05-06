@@ -77,7 +77,7 @@ void Detector::findFrameCentre(cv::Mat& board) {
 				centre_.second /= 4;
 				distance_ =
 				    sqrt((approx[1].x - approx[0].x) * (approx[1].x - approx[0].x) + (approx[1].y - approx[0].y) * (approx[1].y - approx[0].y));
-				distance_ = scalef/ distance_;
+				distance_ = scalef / distance_;
 				cv::circle(board, cv::Point(centre_.first, centre_.second), 5, cv::Scalar(0, 255, 0), -1);
 			} else {
 				centre_.first = -1;

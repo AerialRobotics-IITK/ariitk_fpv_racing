@@ -11,14 +11,13 @@ namespace ariitk::planner {
 
 bool FSM::verbose = true;
 void FSM::init(ros::NodeHandle& nh) {
-
 	p_ = 0;
 	yaw_change_ = 0;
 	ros::NodeHandle nh_private("~");
 	nh_private.getParam("thresh_dist", thresh_dist_);
 
 	std::vector<double> rough_pose_vec[4];
-	
+
 	nh_private.getParam("frame1", rough_pose_vec[0]);
 	nh_private.getParam("frame2", rough_pose_vec[1]);
 	nh_private.getParam("frame3", rough_pose_vec[2]);
@@ -159,8 +158,6 @@ void FSM::DetectionBased(CmdEstimated const& cmd) {
 		double y = odom_.pose.pose.position.y;
 		double z = odom_.pose.pose.position.z;
 
-		
-
 		if ((centre_.x == -1 || centre_.y == -1) && (sum_x == 0 && sum_y == 0 && sum_z == 0)) {
 			double dist = sqrt((sq(rough_pose_[p_ % 4][0] - x)) + (sq(rough_pose_[p_ % 4][1] - y)));
 			if (dist < thresh_dist_) {
@@ -213,7 +210,7 @@ void FSM::PrevCoord(CmdPass const& cmd) {
 	drone_vec_(2) = odom_.pose.pose.position.z;
 	double dist = (frame_vec_ - drone_vec_).norm();
 
-	traj_vec_ = ( frame_vec_ - drone_vec_).normalized() * 2.0;
+	traj_vec_ = (frame_vec_ - drone_vec_).normalized() * 2.0;
 
 	while (dist < thresh_dist_) {
 		ros::spinOnce();
@@ -342,4 +339,5 @@ void FSM::statePublish(ros::NodeHandle nh, FSM_* FSM) {
 		loopRate.sleep();
 	}
 }
+
 } // namespace ariitk::planner
