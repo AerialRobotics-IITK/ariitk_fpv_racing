@@ -229,12 +229,21 @@ void FSM::PrevCoord(CmdPass const& cmd) {
 		dist = sqrt((sq(frame_vec_(0) - drone_vec_(0))) + (sq(frame_vec_(1) - drone_vec_(1))) + (sq(frame_vec_(2) - drone_vec_(2))));
 	}
 
+	for (int i = 0; i < 20; i++) { // MAY BE REMOVED LATER
+		setpt_.pose.position.x = odom_.pose.pose.position.x;
+		setpt_.pose.position.y = odom_.pose.pose.position.y;
+		setpt_.pose.position.z = odom_.pose.pose.position.z;
+		pose_pub_.publish(setpt_);
+
+		lprt.sleep();
+	}
+
 	double v1x, v1y, v2x, v2y;
 	v1x = front_pose_.x - odom_.pose.pose.position.x;
 	v1y = front_pose_.y - odom_.pose.pose.position.y;
 	double mod_v1 = sqrt(sq(v1x) + sq(v1y));
-	v2x = rough_pose_[(p_ % 4) + 1][0] - odom_.pose.pose.position.x;
-	v2y = rough_pose_[(p_ % 4) + 1][1] - odom_.pose.pose.position.y;
+	v2x = rough_pose_[((p_ % 4) + 1)%4][0] - odom_.pose.pose.position.x;
+	v2y = rough_pose_[((p_ % 4) + 1)%4][1] - odom_.pose.pose.position.y;
 	double mod_v2 = sqrt(sq(v2x) + sq(v2y));
 	double crossp = ((v1x * v2y) - (v1y * v2x)) / (mod_v1 * mod_v2);
 

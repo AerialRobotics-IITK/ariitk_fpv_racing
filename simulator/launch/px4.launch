@@ -6,7 +6,7 @@
     <env name="GAZEBO_MODEL_PATH"       value="${GAZEBO_MODEL_PATH}:$(find simulator)/worlds"/>
     <env name="GAZEBO_RESOURCE_PATH"    value="${GAZEBO_RESOURCE_PATH}:$(find simulator)/worlds"/>
     <include file="$(find px4)/launch/mavros_posix_sitl.launch">
-        <arg name="world" default="$(find simulator)/worlds/four_frames.world"/>
+        <arg name="world" default="$(find simulator)/worlds/display_track.world"/>
         <arg name="sdf" default="$(find mavlink_sitl_gazebo)/models/iris_fpv_cam/iris_fpv_cam.sdf"/>
         <arg name="vehicle" value="$(arg mav_name)" />
         <arg name="verbose" default="$(arg verbose)"/>

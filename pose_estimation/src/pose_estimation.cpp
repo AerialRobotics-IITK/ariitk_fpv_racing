@@ -28,7 +28,7 @@ PoseEstimation::PoseEstimation() {
 	img_vec_(2) = 1;
 
 	t_cam_(0) = 0.0;
-	t_cam_(1) = 0.5;
+	t_cam_(1) = 0.0;
 	t_cam_(2) = 0.02;
 }
 void PoseEstimation::getDistance(float& dist) {
