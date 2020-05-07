@@ -2,22 +2,21 @@
 
 using namespace ariitk::detector_ros;
 
-int main(int argc,char** argv) {
-    ros::init(argc, argv, "detector_node");
-    ros::NodeHandle nh;
+int main(int argc, char** argv) {
+	ros::init(argc, argv, "detector_node");
+	ros::NodeHandle nh;
 
-    DetectorROS detect;
+	DetectorROS detect;
 
-    detect.init(nh);
+	detect.init(nh);
 
-    ros::Rate loop_rate(20);
+	ros::Rate loop_rate(20);
 
-    while(ros::ok()) {
-        detect.run();
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
+	while (ros::ok()) {
+		detect.run();
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
 
-    return 0;
-
+	return 0;
 }
