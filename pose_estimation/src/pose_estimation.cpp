@@ -54,7 +54,7 @@ void PoseEstimation::setQuaternion(nav_msgs::Odometry odom) {
 }
 
 void PoseEstimation::CamToQuad() {
-	ROS_INFO_STREAM( scale_up_(0, 0) << "\n");
+	ROS_INFO_STREAM(scale_up_(0, 0) << "\n");
 	Eigen::Matrix3d inv_cam_matrix = cam_matrix_.inverse();
 	quad_coord_ = cam_to_quad_ * scale_up_ * inv_cam_matrix * img_vec_ + t_cam_;
 }

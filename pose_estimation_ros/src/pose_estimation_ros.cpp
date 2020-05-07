@@ -36,7 +36,7 @@ void PoseEstimationROS::run() {
 	front_coord_pub_.publish(front_coord_);
 
 	dist = centre_coord_.d;
-	x_m = centre_coord_.x,y_m = centre_coord_.y; 
+	x_m = centre_coord_.x, y_m = centre_coord_.y;
 	pose_est_.getDistance(dist);
 	pose_est_.setImgVec(x_m, y_m);
 	pose_est_.CamToQuad();

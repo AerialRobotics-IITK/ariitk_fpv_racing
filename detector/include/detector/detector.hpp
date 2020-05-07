@@ -29,7 +29,7 @@ class Detector {
 
 		double getDistance() { return distance_; };
 		static double scalef;
-	
+
 	private:
 		std::pair<int, int> centre_;
 
@@ -46,7 +46,6 @@ class Detector {
 
 		double min_contour_area_;
 		double distance_;
-
 };
 
 } // namespace ariitk::detector

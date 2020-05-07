@@ -10,8 +10,8 @@ namespace ariitk::planner_ros {
 
 class fsmROS {
 	public:
-		fsmROS() {};
-		~fsmROS() {};
+		fsmROS(){};
+		~fsmROS(){};
 		void init(ros::NodeHandle& nh);
 		void run();
 
