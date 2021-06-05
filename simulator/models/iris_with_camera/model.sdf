@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+
+  <model name="iris_with_camera">
+    <include>
+        <uri>model://iris</uri>
+        <pose>1.6762 -2.11639 0.3188 0 0 0 </pose>
+    </include>
+
+    <include>
+        <uri>model://kinect</uri>
+        <pose>1.672242 -2.124805 0.253161 0 0 0 </pose>
+    </include>
+
+    <joint name='camerafix' type='fixed'>
+        <parent>iris::base_link</parent>
+        <child>kinect::link</child>
+    </joint>
+  </model>
+</sdf>

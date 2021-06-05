@@ -22,7 +22,7 @@
 <robot name="$(arg mav_name)" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Instantiate the mav-->
   <xacro:include filename="$(find rotors_description)/urdf/$(arg mav_name)_base.xacro" />
-
+  <!-- <xacro:include filename="libgazebo_ros_openni_kinect.so"/> -->
   <!-- Mount a generic odometry sensor without odometry map (working everywhere). -->
   <xacro:odometry_plugin_macro
     namespace="${namespace}"
@@ -54,7 +54,7 @@
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
   </xacro:odometry_plugin_macro>
 
-  <xacro:camera_macro
+  <!-- <xacro:camera_macro
   namespace="${namespace}"
   parent_link="${namespace}/base_link"
   camera_suffix="front"
@@ -70,7 +70,34 @@
   enable_visual="true">
   <box size="0.02 0.02 0.02"/>
   <origin xyz="0.20 0.0 -0.02" rpy="0.0 0.0 0.0" />
-  </xacro:camera_macro>
+  </xacro:camera_macro> -->
 
+<!-- <xacro:camera_macro
+  namespace="${namespace}"
+  parent_link="${namespace}/base_link"
+  baseline="0.2"
+  alwaysOn="true"
+  cameraName="camera_ir"
+  imageTopicName="/camera/color/image_raw"
+  cameraInfoTopicName="/camera/color/camera_info"
+  depthImageTopicName="/camera/depth/image_raw"
+  depthImageCameraInfoTopicName="/camera/depth/camera_info"
+  pointCloudTopicName="/camera/depth/points"
+  frameName="camera_link"
+  pointCloudCutoff="0.5"
+  pointCloudCutoffMax="3.0"
+  distortionK1="0"
+  distortionK2="0"
+  distortionK3="0"
+  distortionT1="0"
+  distortionT2="0"
+  CxPrime="0"
+  Cx="0"
+  Cy="0"
+  focalLenght="0"
+  hackBaseline="0">
+  <box size="0.073000 0.276000 0.072000"/>
+  <origin xyz="0.20 0.0 -0.02" rpy="0.0 0.0 0.0" />
+</xacro:camera_macro> -->
 </robot>
 
