@@ -1,23 +1,5 @@
 <?xml version="1.0"?>
-<!--
-  Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
-  Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
-  Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
-  Copyright 2015 Janosch Nikolic, ASL, ETH Zurich, Switzerland
-  Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 
 <robot name="$(arg mav_name)" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Instantiate the mav-->
@@ -55,6 +37,12 @@
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
   </xacro:odometry_plugin_macro>
 
+<!-- ##############################################################################
+  
+  A simple ROS camera. More info can be found following this link https://discuss.px4.io/t/how-to-add-a-ros-camera-to-iris-for-gazebo-simulation/5118
+
+  #################################################################################-->
+
   <!-- <xacro:camera_macro
   namespace="${namespace}"
   parent_link="${namespace}/base_link"
@@ -73,33 +61,12 @@
   <origin xyz="0.20 0.0 -0.02" rpy="0.0 0.0 0.0" />
   </xacro:camera_macro> -->
 
-<!-- <xacro:camera_macro
-  namespace="${namespace}"
-  parent_link="${namespace}/base_link"
-  baseline="0.2"
-  alwaysOn="true"
-  cameraName="camera_ir"
-  imageTopicName="/camera/color/image_raw"
-  cameraInfoTopicName="/camera/color/camera_info"
-  depthImageTopicName="/camera/depth/image_raw"
-  depthImageCameraInfoTopicName="/camera/depth/camera_info"
-  pointCloudTopicName="/camera/depth/points"
-  frameName="camera_link"
-  pointCloudCutoff="0.5"
-  pointCloudCutoffMax="3.0"
-  distortionK1="0"
-  distortionK2="0"
-  distortionK3="0"
-  distortionT1="0"
-  distortionT2="0"
-  CxPrime="0"
-  Cx="0"
-  Cy="0"
-  focalLenght="0"
-  hackBaseline="0">
-  <box size="0.073000 0.276000 0.072000"/>
-  <origin xyz="0.20 0.0 -0.02" rpy="0.0 0.0 0.0" />
-</xacro:camera_macro> -->
+<!-- ############################################################################
+  
+   Adding the depth camera to the drone following this http://gazebosim.org/tutorials/?tut=ros_depth_camera and by creating a custom xacro file for this model
+   
+   ###############################################################################-->
+
 
 <xacro:depth_camera_macro
   namespace="${namespace}"
@@ -126,8 +93,25 @@
   Cy="0"
   focalLength="0"
   hackBaseline="0">
-  <!-- <box size="0.073000 0.276000 0.072000"/> -->
-  <!-- <origin xyz="0.20 0.0 -0.02" rpy="0.0 0.0 0.0" />> -->
 </xacro:depth_camera_macro>
+
+
+<!-- ############################################################################
+  
+   Adding the vi_sensor depth camera
+   
+   ###############################################################################-->
+
+
+<!-- <xacro:vi_sensor_depth_macro
+  namespace="${namespace}"
+  parent_link="${namespace}/base_link"
+  camera_suffix="front"
+  frame_rate="30"
+  max_range="10">
+  <origin xyz="0.20 0.0 -0.02" rpy="0.0 0.0 0.0" />
+</xacro:vi_sensor_depth_macro> -->
+
+
 </robot>
 

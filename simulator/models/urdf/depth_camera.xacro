@@ -29,6 +29,7 @@
                     <box size="0.073 0.276 0.072"/>
                 </geometry>
             </collision>
+        </link>
             <gazebo reference="depth_camera">
                 <sensor name="camera" type="depth">
                     <update_rate>20</update_rate>
@@ -70,6 +71,5 @@
                     </plugin>
                 </sensor>
             </gazebo>
-        </link>
     </xacro:macro>
 </robot>
