@@ -98,7 +98,7 @@
 
 <!-- ############################################################################
   
-   Adding the vi_sensor depth camera
+   Adding the vi_sensor depth camera ( if want to change bnw <-> color go to component_snippets.xacro to line 662 and change the argument of format L8 <-> R8G8B8)
    
    ###############################################################################-->
 
